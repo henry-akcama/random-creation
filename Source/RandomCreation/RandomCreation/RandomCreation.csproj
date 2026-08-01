@@ -31,6 +31,18 @@
     </Content>
   </ItemGroup>
 
+  <!-- ── Sample content — shipped as an example, NOT as live data ── -->
+  <!-- Deliberately lands in 'samples', never 'data'. A file copied into
+       data\categories.json would overwrite a user's entire content the
+       first time they installed an update over their existing folder.
+       Users copy this into data\ themselves if they want the example. -->
+  <ItemGroup>
+    <Content Include="SampleData\categories.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>samples\categories.json</TargetPath>
+    </Content>
+  </ItemGroup>
+
   <!-- ── Data folder — excluded from publish so users can back it up ── -->
   <!-- The 'data' folder is created at runtime by DataService.
        It is intentionally NOT included here so it persists across updates. -->

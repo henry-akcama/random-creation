@@ -33,8 +33,8 @@ only): read Documents\AI PM\AI_Project_Manager.md in full and follow it.
 | Path | What it is | Edit it? |
 |------|-----------|----------|
 | `Source\RandomCreation\` | **The live Visual Studio solution.** `RandomCreation.sln` + the `RandomCreation\` project. | **YES — this is the only place to make changes.** |
-| `docs\` | Claude project knowledge base — source snapshots at v1.0/v2.0/v3.0. Reference only. Slated for reorganization; the folder does not survive under that name. | Read for context |
 | `Documents\Design\` | Design records, screenshots by version, icon assets. | Read for context |
+| `Documents\Archive\` | Pre-git source snapshots at v1.0/v2.0 — the ONLY surviving copies, since git history starts at v3.0. Reference only. | Read for context |
 | `Releases\` | Built releases (v1.0 source + build, v2.0/v3.0 zips). Git-ignored. | No |
 
 Before editing any file, confirm the path starts with `Source\RandomCreation\`. If a
@@ -49,7 +49,14 @@ Git arrived with the AI PM adoption (July 2026) and the developer is **new to gi
 GitHub — explain git operations plainly as they happen**, in plain language, at the time
 they run. `.gitignore` excludes build output (`bin\`, `obj\`, `.vs\`), the `Releases\`
 archive, `Thumbs.db`, and `*.csproj.user`; those stay on disk but out of the repository.
-Everything else — live source, `docs\`, `Documents\` — is tracked.
+Everything else — live source and `Documents\` — is tracked.
+
+**GitHub** (set up August 2026): `https://github.com/henry-akcama/random-creation`, remote
+name `origin`. **Public, but not open source** — the root `LICENSE` is all-rights-reserved,
+and `README.md` declines code contributions, which is what keeps a future sale possible.
+Commits use the noreply identity `311688069+henry-akcama@users.noreply.github.com`, set
+globally on this machine so the real address never reaches a public repo. Push early and
+often: a push is backup, not publication. See the lifecycle doc for the full scheme.
 
 **Deletions must be loudly flagged in advance or handed to the developer** — never
 deleted quietly. Tracked files are recoverable from git history after deletion; ignored
@@ -173,9 +180,14 @@ loading anything else and routes to v2→v3 (wrap flat categories into one group
 collection, clear history and presets, offer a history backup) or v1→v3 (rename the old
 `creature_crafter_data.json`, start fresh) or unknown→fresh (back up everything with `.bak`).
 
-The shipped v3.0 release carries a starter `data\categories.json` as sample content. The
-root-level `categories.json` in this folder is a sample for people testing the app; its
-permanent home is an open question.
+**Sample content ships to `samples\`, never `data\`.** The sample lives at
+`Source\RandomCreation\RandomCreation\SampleData\categories.json`, and the `.csproj` copies
+it to `samples\categories.json` beside the exe. It must never target `data\`:
+`changelog.txt` uses exactly that mechanism and *should* be overwritten every release, but
+`categories.json` is the user's entire content, and a release landing one at
+`data\categories.json` would destroy the work of anyone updating over their existing
+folder. (v3.0 did ship a `data\categories.json`, but by accident of the release process —
+there was no mechanism to preserve.)
 
 ---
 
@@ -229,5 +241,6 @@ judgment, not rigid rules.)
 | `Documents\Design\RandomCreation_FileIndex_v3_0.md` | What each source file does and what changed in v3.0 |
 | `Documents\Design\RandomCreation_ProjectContext_3_0.md` | Shorter v3.0 summary |
 | `Documents\Design\RandomCreation_ProjectContext_v2.0.md`, `_v1.0.md` | Earlier version design records |
+| `Documents\Design\RandomCreation_DevelopmentLifecycle.md` | **How the project is worked and shipped.** Storage scheme, the build cycle, git/GitHub, licensing, the portable-vs-installed fork, sample content |
 | `Documents\Design\Screen Shots\` | UI screenshots by version (v1.0, v2.0, v3.0) |
-| `docs\v3.0\changelog_3_0.txt` | Released changes, user-facing wording |
+| `Source\RandomCreation\RandomCreation\changelog.txt` | Released changes, user-facing wording — the live file, copied to `data\` at build |

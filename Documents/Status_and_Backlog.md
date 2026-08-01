@@ -2,25 +2,82 @@ Random Creation — Status and Backlog
 
 Current status + what's next. Rewritten at every close-out; completed work leaves for the changelog.
 
-CURRENT STATUS (August 1 2026, v3.1)
+CURRENT STATUS (August 1 2026, v3.2)
 
-The app itself has not changed: still a finished v3.0, assembly 3.0.0.0, sitting between releases. What changed is everything around it. The folder arrived carrying the aftermath of two migrations — five overlapping source trees, an un-extracted knowledge-base zip, duplicates three deep — and left with five folders and four files at the root. The Claude-project export was extracted and hash-verified, the design records and screenshots were consolidated into Documents\Design\, the icon assets followed them, the v1.0 build was reunited with its source under Releases\, and the entire Source Code\ tree — the hand-rolled version control from the pre-git era — was retired into git history. Eight commits. Nothing unique was deleted anywhere: every removal was hash-proven redundant first, and every tracked file remains recoverable.
+The app still has not changed: a finished v3.0, assembly 3.0.0.0, sitting between releases. What
+changed is the scheme around it. The developer asked to be TAUGHT how a project like this should
+be laid out and shipped rather than handed a scheme, and that teaching session is now a record
+doc — RandomCreation_DevelopmentLifecycle.md, authoritative for how this project is worked and
+released.
 
-Two findings outrank the tidying. First, a real bug: the shipped v3.0 loads v2.0 theme dictionaries, because the updated v3.0 theme files were saved to the project root instead of the Themes\ folder the app reads from, four hours before the release was built. It compiles cleanly, which is exactly why it shipped. Second, a capability that reshapes how sessions can work: the .NET SDK that ships with Visual Studio builds this project from the command line in about seven seconds, so the AI can now build and launch the app directly rather than describing changes and hoping.
+Three things settled. The docs\ folder is gone: its v1.0 and v2.0 source snapshots were rescued
+into Documents\Archive\ after it emerged they are the ONLY surviving copies of pre-git source
+(git history starts at v3.0; the v2.0 release zip contains no source), and everything else in it
+was proven byte-identical to Source\ before deletion. categories.json is homed at
+Source\...\SampleData\ and ships to samples\ beside the exe — deliberately never to data\, since
+a release landing a file there would destroy the content of anyone updating over their existing
+folder. And the project is on GitHub: public, all-rights-reserved, with LICENSE and README
+written.
 
 Live code is Source\RandomCreation\ ONLY.
 
 WHAT'S NEXT (in intended order)
 
-1. Project structure and storage design — the scheme session, and the developer's stated next topic. What is stored, where, why; how a build becomes a release; where git and GitHub fit; what belongs on disk versus in history. The developer wants to learn this rather than be handed it, so it is taught and walked through, not decided for them. Three open items feed into it and should NOT be settled ahead of it: (a) docs\ — currently holds the v1.0/v2.0/v3.0 source snapshots plus README.md, the old project-guide CLAUDE.md, the original export zip and a stray _bridge_test.txt; developer ruling is that it was only ever a landing point for the Claude-project grab and does not survive under that name, though it may be renamed; Documents\ is this project's documentation folder and the name is taken. (b) categories.json at the root — a sample data file for people testing the app; the developer thinks it may have been intended to ship with a JSON but is not certain it ever did. (c) Visual Studio setup for this project — the developer has been experimenting and wants help configuring it properly; a stray .vs folder appeared at the project root on August 1 from that experimentation, git-ignored and harmless.
+1. GitHub — finish what this session started. The repository exists at
+   https://github.com/henry-akcama/random-creation, connected as origin, verified reachable and
+   empty. Three steps remain, in order: (a) rewrite the 10 pre-adoption commits to the noreply
+   address — safe ONLY while nothing has been pushed, so this happens first and git filter-branch
+   is the tool, the tree needing to be clean for it to run; (b) the first push, which opens a
+   browser once for Credential Manager to authenticate; (c) then the parts that need a populated
+   repo — GitHub Actions for automated release builds, and GitHub Pages for the product page.
+   Developer ruled this happens immediately after the v3.2 close-out.
 
-2. GitHub — developer has never used GitHub, no account yet; teach from zero. Decision leaning yes: off-machine backup for a repo living on a network share. Account creation is developer-only; the AI handles the git side. Two questions are now answered: the repo is about 10 MB tracked, nowhere near any limit, and GitHub Releases genuinely replaces the Releases\ folder's distribution role — release attachments allow up to 2 GB per file, so the ~70 MB zips are fine, and the 100 MB limit applies only to files committed into the repository. A publishing workflow (GitHub Actions, Windows runner, build on tag) is viable and was assessed: good for producing releases, NOT a substitute for building locally, because a build server proves code compiles and cannot prove a GUI app works — the theme bug is the standing proof, since it compiles perfectly.
+2. Visual Studio setup — the other half of the structure session, not reached. The developer has
+   been experimenting and wants help configuring it properly. A stray .vs folder at the project
+   root dates from that experimentation; git-ignored and harmless. Deferred to after GitHub
+   because VS's git integration configures more cleanly once a remote exists.
 
-3. Bug fixes — the real work, and the reason for the tooling. The list opens with one confirmed entry; the developer has more to report and none are captured yet. A bug session should collect the full list before fixing anything.
-   * BUG 1 (found 2026-08-01, unfixed by developer ruling — logged rather than fixed mid-organization): shipped v3.0 uses v2.0 theme files. Source\RandomCreation\RandomCreation\Themes\DarkTheme.xaml and LightTheme.xaml are byte-identical to the v2.0 themes (last modified May 31 2026). The v3.0 themes sit unreferenced at the project root, dated June 6 4:27 PM — the release exe was built at 8:40 PM the same evening. App.xaml, RandomCreation.csproj, and ThemeService.cs all point at Themes\. Fix is to move the root copies into Themes\ and rebuild; verify visually rather than by compile, since compiling is what missed it.
+3. Bug fixes — the real work, and the reason for the tooling. A bug session should collect the
+   full list before fixing anything; the developer has more to report and none are captured yet.
+   * BUG 1 (found 2026-08-01, unfixed by developer ruling): shipped v3.0 uses v2.0 theme files.
+     Source\...\Themes\DarkTheme.xaml and LightTheme.xaml date from May 31 2026; the real v3.0
+     themes sit unreferenced one folder up at the project root, dated June 6 16:27 — the release
+     exe was built at 20:40 the same evening. Hashes confirmed at the v3.2 close-out: the root
+     copies are byte-identical to docs\v3.0\'s themes, so the fix material is safe and tracked.
+     App.xaml, RandomCreation.csproj and ThemeService.cs all point at Themes\. Fix is to move the
+     root copies into Themes\ and rebuild; verify VISUALLY rather than by compile, since
+     compiling is exactly what missed it.
+
+4. Installable build (learning goal, developer-requested). Move from portable to installed.
+   Requires: user data relocated out of the program folder to %AppData%\RandomCreation\, since
+   Program Files is not user-writable and DataService currently resolves data\ from
+   AppDomain.CurrentDomain.BaseDirectory; the installer must not overwrite existing user data on
+   upgrade; the uninstaller offers to remove user data or leave it; a migration path for existing
+   portable users. Changes the updater story — an installed app can update itself in ways a
+   portable zip cannot. Code signing acknowledged and deferred (~$200-400/year, and SmartScreen
+   reputation builds slowly regardless). STANDING RULING: this gets a detailed design pass
+   worked through with the developer BEFORE any building starts — not a build-first item.
 
 DEFERRED / PARKED
 
-* Changelog milestone backfill (pre-adoption v1.0 → v2.0 → v3.0 history at milestone granularity) — deferred at adoption; the app's own data\changelog.txt and the release archives hold the raw material.
-* v4.0 feature backlog — exists as an explicit deferred list from v3.0 (categories.json import, Back button redesign, single-collection export, history search, keyboard-shortcut customisation); nothing started. Recorded in the v3.0 context doc's Deferred section; carry into planning when v4.0 opens.
-* Releases\ slimming — the two extracted release folders were removed by the developer on 2026-08-01, taking the folder from 953 MB to 781 MB. The remaining v1.0 source tree could go once GitHub Releases is proven, but that decision waits until a release has actually been published and downloaded back. Releases\ is git-ignored, so nothing there has a git safety net.
+* Updater — three options recorded in the lifecycle doc. The no-dependency one (query the GitHub
+  Releases API at startup, offer a download link, ~40 lines with built-in .NET types) is the
+  recommended fit and respects the no-NuGet conviction. Waits on item 4's shape.
+* Sample categories.json is the smaller 10,685-byte file; the developer's own working copy in
+  bin\ is 17,296 bytes and a richer example. Swapping is a five-second job whenever wanted.
+  Developer chose the smaller one for now.
+* README screenshots currently point into Documents\Design\Screen Shots\v3.0\ — internal design
+  records serving a public landing page. Works, avoids duplication, and should be revisited when
+  the Pages site is built, not before.
+* RandomCreation_ProjectContext_3_0.md is a shorter v3.0 summary subordinate to the full
+  RandomCreation_ProjectContext_v3_0.md. Possible retirement candidate; nobody has read it in
+  anger yet, so it stays until someone confirms it carries nothing unique.
+* Changelog milestone backfill (pre-adoption v1.0 → v2.0 → v3.0 history) — deferred at adoption;
+  the app's own changelog.txt and the release archives hold the raw material.
+* v4.0 feature backlog — an explicit deferred list from v3.0 (categories.json import, Back button
+  redesign, single-collection export, history search, keyboard-shortcut customisation); nothing
+  started. Recorded in the v3.0 context doc's Deferred section; carry into planning when v4.0
+  opens.
+* Releases\ slimming — the folder is 781 MB and git-ignored, so nothing in it has a safety net.
+  The remaining v1.0 source tree could go once GitHub Releases is proven, but that waits until a
+  release has actually been published and downloaded back.
