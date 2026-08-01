@@ -6,7 +6,7 @@ Read in full at session start, before the handoff.
 
 * Project: Random Creation — WPF desktop app (C# / .NET 8)
 * Project version at adoption: 3.0 (Major.Minor; Minor bumps every close-out, Major on a declared milestone). Matches the shipped app version at adoption (assembly 3.0.0.0); the project version and the app's assembly version move independently from here.
-* Record docs: to be listed as the file-organization pass settles where they live. Known candidates, currently inside the un-extracted Claude-project export (docs\RandomCreation_ClaudeCode_setup.zip): RandomCreation_ProjectContext_v3_0.md (full v3.0 design record), RandomCreation_FileIndex_v3_0.md (per-file index), plus earlier-version context docs.
+* Record docs: all in Documents\Design\ (settled at the file-organization pass, August 2026). RandomCreation_ProjectContext_v3_0.md — authoritative for v3.0 design: architecture, every screen's layout, undo/toast/clipboard/drag specs, colour palettes, bug-fix table, deferred list. RandomCreation_FileIndex_v3_0.md — authoritative for what each source file does and what changed in v3.0. RandomCreation_ProjectContext_3_0.md — shorter v3.0 summary, subordinate to the full record. RandomCreation_ProjectContext_v2.0.md and RandomCreation_ProjectContext_v1.0.md — frozen records of their own versions, historical only. No amendment chain yet: each doc is authoritative for its own version and none amends another. Screen Shots\ (v1.0/v2.0/v3.0) and Icons\ sit alongside them as design artifacts, not records.
 * Feedback Pass: on
 * External storage map: none — all project files have been consolidated into this one folder (July 2026); the file-server origin is history, not a live location.
 * Allowed write locations: none
