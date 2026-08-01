@@ -1,0 +1,42 @@
+<Application x:Class="RandomCreation.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:RandomCreation"
+             StartupUri="MainWindow.xaml">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Dark theme loaded by default.
+                     ThemeService.Apply() swaps this out on startup
+                     before the window is shown. -->
+                <ResourceDictionary Source="Themes/DarkTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- ── SelectedCategoryBrush fallback ────────────────────────────
+                 Defined here so DynamicResource in DataTemplate triggers always
+                 resolves. Theme files override this at runtime via ThemeService.
+                 This value is intentionally neutral — theme files provide the
+                 correct per-theme color. ── -->
+            <SolidColorBrush x:Key="SelectedCategoryBrush" Color="#1e2a3a"/>
+
+            <!-- ── Value converters — available globally via StaticResource ── -->
+            <local:ScaleConverter             x:Key="ScaleConverter"/>
+            <local:EnabledToOpacityConverter  x:Key="EnabledToOpacityConverter"/>
+            <local:BoolToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
+            <local:PillBackgroundConverter    x:Key="PillBackgroundConverter"/>
+            <local:PillForegroundConverter    x:Key="PillForegroundConverter"/>
+            <local:PillBorderConverter        x:Key="PillBorderConverter"/>
+            <local:PillTextConverter          x:Key="PillTextConverter"/>
+            <local:DimmedToOpacityConverter   x:Key="DimmedToOpacityConverter"/>
+            <local:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+
+            <!-- ── Scale factor — updated at runtime by ThemeService ─────── -->
+            <!-- Default 1.0 — overwritten immediately by ThemeService.Apply() -->
+            <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                        x:Key="AppScaleFactor">1.0</sys:Double>
+
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>

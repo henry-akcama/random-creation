@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>RandomCreation</AssemblyName>
+    <RootNamespace>RandomCreation</RootNamespace>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
+    <Version>3.0.0</Version>
+  </PropertyGroup>
+
+  <!-- ── Theme resource dictionaries — copy to output so they load at runtime ── -->
+  <ItemGroup>
+    <Resource Include="Themes\DarkTheme.xaml"/>
+    <Resource Include="Themes\LightTheme.xaml"/>
+  </ItemGroup>
+
+  <!-- ── App icon — copy to output alongside exe ── -->
+<ItemGroup>
+  <Content Include="icon.ico">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+  <Content Include="changelog.txt">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <TargetPath>data\changelog.txt</TargetPath>
+  </Content>
+</ItemGroup>
+
+  <!-- ── Data folder — excluded from publish so users can back it up ── -->
+  <!-- The 'data' folder is created at runtime by DataService.
+       It is intentionally NOT included here so it persists across updates. -->
+
+</Project>

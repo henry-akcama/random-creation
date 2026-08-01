@@ -1,0 +1,791 @@
+<Window x:Class="RandomCreation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:RandomCreation"
+        Title="Random Creation"
+        Width="1050" Height="700"
+        MinWidth="800" MinHeight="600"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="CanResize"
+        KeyboardNavigation.TabNavigation="Cycle"
+        Focusable="True"
+        FocusManager.IsFocusScope="True">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="6"
+                      CaptionHeight="0"
+                      CornerRadius="0"
+                      GlassFrameThickness="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Border Background="{DynamicResource BackgroundOuterBrush}"
+            BorderBrush="{DynamicResource BorderStandardBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- ══ CUSTOM TITLE BAR ══════════════════════════════════════════ -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource BackgroundTitleBarBrush}"
+                    BorderBrush="{DynamicResource BorderStandardBrush}"
+                    BorderThickness="0,0,0,1"
+                    CornerRadius="8,8,0,0"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid Height="44">
+
+                    <!-- Left — app icon + nav buttons -->
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Margin="10,0,0,0">
+
+                        <Image Source="icon.ico" Width="20" Height="20"
+                               Margin="0,0,6,0" VerticalAlignment="Center"
+                               RenderOptions.BitmapScalingMode="HighQuality"/>
+
+                        <!-- Manage Content -->
+                        <Button Click="ManageContentButton_Click"
+                                Cursor="Hand" ToolTip="Manage Content"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Bd" Background="Transparent"
+                                            CornerRadius="6" Padding="7,5"
+                                            Width="34" Height="32">
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="18" Height="18">
+                                                <Rectangle Canvas.Left="0" Canvas.Top="0"
+                                                           Width="7" Height="7" RadiusX="1.5" RadiusY="1.5"
+                                                           Stroke="{DynamicResource NavIconBrush}" StrokeThickness="1.2"/>
+                                                <Rectangle Canvas.Left="9" Canvas.Top="0"
+                                                           Width="7" Height="7" RadiusX="1.5" RadiusY="1.5"
+                                                           Stroke="{DynamicResource NavIconBrush}" StrokeThickness="1.2"/>
+                                                <Rectangle Canvas.Left="0" Canvas.Top="9"
+                                                           Width="7" Height="7" RadiusX="1.5" RadiusY="1.5"
+                                                           Stroke="{DynamicResource NavIconBrush}" StrokeThickness="1.2"/>
+                                                <Path Canvas.Left="10" Canvas.Top="9"
+                                                      Data="M3.5,0 V7 M0,3.5 H7"
+                                                      Stroke="{DynamicResource NavIconBrush}"
+                                                      StrokeThickness="1.5"
+                                                      StrokeStartLineCap="Round"
+                                                      StrokeEndLineCap="Round"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background"
+                                                    Value="{DynamicResource HoverDarkBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <!-- History -->
+                        <Button Click="HistoryButton_Click"
+                                Cursor="Hand" ToolTip="History"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Bd" Background="Transparent"
+                                            CornerRadius="6" Padding="7,5"
+                                            Width="34" Height="32">
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="16" Height="16">
+                                                <Ellipse Canvas.Left="1" Canvas.Top="1"
+                                                         Width="14" Height="14"
+                                                         Stroke="{DynamicResource NavIconBrush}"
+                                                         StrokeThickness="1.3"/>
+                                                <Path Data="M8,4 V8 L11,10"
+                                                      Stroke="{DynamicResource NavIconBrush}"
+                                                      StrokeThickness="1.3"
+                                                      StrokeStartLineCap="Round"
+                                                      StrokeEndLineCap="Round"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background"
+                                                    Value="{DynamicResource HoverDarkBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <!-- Settings -->
+                        <Button Click="SettingsButton_Click"
+                                Cursor="Hand" ToolTip="Settings"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Bd" Background="Transparent"
+                                            CornerRadius="6" Padding="7,5"
+                                            Width="34" Height="32">
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="16" Height="16">
+                                                <Path Stroke="{DynamicResource NavIconBrush}"
+                                                      StrokeThickness="1.4"
+                                                      Fill="Transparent"
+                                                      Data="M 6.5,1.5 L 7.2,3.2 A 3,3 0 0 1 8.8,3.2 L 9.5,1.5
+                                                            L 11,2.5 L 10.5,4.2 A 3,3 0 0 1 11.8,5.5 L 13.5,5
+                                                            L 14.5,6.5 L 12.8,7.5 A 3,3 0 0 1 12.8,8.5 L 14.5,9.5
+                                                            L 13.5,11 L 11.8,10.5 A 3,3 0 0 1 10.5,11.8 L 11,13.5
+                                                            L 9.5,14.5 L 8.8,12.8 A 3,3 0 0 1 7.2,12.8 L 6.5,14.5
+                                                            L 5,13.5 L 5.5,11.8 A 3,3 0 0 1 4.2,10.5 L 2.5,11
+                                                            L 1.5,9.5 L 3.2,8.5 A 3,3 0 0 1 3.2,7.5 L 1.5,6.5
+                                                            L 2.5,5 L 4.2,5.5 A 3,3 0 0 1 5.5,4.2 L 5,2.5 Z"/>
+                                                <Ellipse Canvas.Left="5.5" Canvas.Top="5.5"
+                                                         Width="5" Height="5"
+                                                         Stroke="{DynamicResource NavIconBrush}"
+                                                         StrokeThickness="1.4"
+                                                         Fill="{DynamicResource BackgroundTitleBarBrush}"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background"
+                                                    Value="{DynamicResource HoverDarkBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <!-- Theme toggle -->
+                        <Button Click="ThemeToggleButton_Click"
+                                Cursor="Hand" ToolTip="Switch theme"
+                                x:Name="ThemeToggleBtn"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Bd" Background="Transparent"
+                                            CornerRadius="6" Padding="7,5"
+                                            Width="34" Height="32">
+                                        <Grid Width="16" Height="16">
+                                            <Viewbox x:Name="SunIcon" Width="15" Height="15">
+                                                <Canvas Width="16" Height="16">
+                                                    <Ellipse Canvas.Left="5" Canvas.Top="5"
+                                                             Width="6" Height="6"
+                                                             Stroke="{DynamicResource NavIconBrush}"
+                                                             StrokeThickness="1.3"/>
+                                                    <Path Data="M8,0.5 V2.5 M8,13.5 V15.5
+                                                                M0.5,8 H2.5 M13.5,8 H15.5
+                                                                M2.6,2.6 L4,4 M12,12 L13.4,13.4
+                                                                M13.4,2.6 L12,4 M4,12 L2.6,13.4"
+                                                          Stroke="{DynamicResource NavIconBrush}"
+                                                          StrokeThickness="1.3"
+                                                          StrokeStartLineCap="Round"
+                                                          StrokeEndLineCap="Round"/>
+                                                </Canvas>
+                                            </Viewbox>
+                                            <Viewbox x:Name="MoonIcon" Width="14" Height="14"
+                                                     Visibility="Collapsed">
+                                                <Canvas Width="14" Height="14">
+                                                    <Path Data="M 10,2 A 7,7 0 1 0 10,12 A 5,5 0 1 1 10,2 Z"
+                                                          Fill="{DynamicResource NavIconBrush}"/>
+                                                </Canvas>
+                                            </Viewbox>
+                                        </Grid>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background"
+                                                    Value="{DynamicResource HoverDarkBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Center — app title -->
+                    <TextBlock Text="Random Creation"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               FontSize="14" FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Opacity="0.2"
+                               IsHitTestVisible="False"/>
+
+                    <!-- Right — window controls -->
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Stretch">
+                        <Button Click="MinimizeButton_Click"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
+                                Cursor="Hand" Width="46" Height="44">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Bd" Background="Transparent">
+                                        <Path Data="M0,5.5 H12"
+                                              Stroke="{DynamicResource WinBtnForegroundBrush}"
+                                              StrokeThickness="1"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background"
+                                                    Value="{DynamicResource WinBtnHoverBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <Button x:Name="MaximizeButton"
+                                Click="MaximizeButton_Click"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
+                                Cursor="Hand" Width="46" Height="44">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Bd" Background="Transparent">
+                                        <Rectangle Width="11" Height="11"
+                                                   Stroke="{DynamicResource WinBtnForegroundBrush}"
+                                                   StrokeThickness="1" RadiusX="1" RadiusY="1"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background"
+                                                    Value="{DynamicResource WinBtnHoverBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <Button Click="CloseButton_Click"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
+                                Cursor="Hand" Width="46" Height="44">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Bd" Background="Transparent"
+                                            CornerRadius="0,8,0,0">
+                                        <Path Data="M0,0 L10,10 M10,0 L0,10"
+                                              Stroke="{DynamicResource WinBtnForegroundBrush}"
+                                              StrokeThickness="1.2"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background"
+                                                    Value="{DynamicResource WinBtnCloseHoverBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ══ SCREEN PANELS ════════════════════════════════════════════ -->
+            <Grid Grid.Row="1" x:Name="MainContentGrid">
+
+                <!-- ── MAIN PANEL ── -->
+                <Grid x:Name="MainPanel" Visibility="Visible">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>  <!-- Summary bar -->
+                        <RowDefinition Height="*"/>     <!-- Content -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Summary bar -->
+                    <Border Grid.Row="0"
+                            Background="{DynamicResource BackgroundSummaryBarBrush}"
+                            BorderBrush="{DynamicResource BorderSubtleBrush}"
+                            BorderThickness="0,0,0,1"
+                            Padding="14,5">
+                        <Grid>
+                            <!-- Left: GENERATING FROM + collection pills + counts -->
+                            <WrapPanel x:Name="SummaryBar"
+                                       Orientation="Horizontal"
+                                       VerticalAlignment="Center">
+                                <TextBlock Text="GENERATING FROM"
+                                           Foreground="{DynamicResource TextMutedBrush}"
+                                           FontSize="11" FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,8,0"/>
+                                <!-- Pills and counts injected in code-behind -->
+                            </WrapPanel>
+
+                            <!-- Right: Presets link -->
+                            <Button x:Name="PresetsLinkButton"
+                                    Click="PresetsLinkButton_Click"
+                                    HorizontalAlignment="Right"
+                                    Cursor="Hand" ToolTip="Quick-load a preset">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Bd" Background="Transparent"
+                                                CornerRadius="4" Padding="6,3">
+                                            <TextBlock Text="Presets ▾"
+                                                       Foreground="{DynamicResource AccentBlueBrush}"
+                                                       FontSize="12"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background"
+                                                        Value="{DynamicResource HoverDarkBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!-- Main content -->
+                    <Grid Grid.Row="1" Margin="16">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>    <!-- Results card -->
+                            <RowDefinition Height="Auto"/> <!-- Generate button -->
+                            <RowDefinition Height="Auto"/> <!-- Recent history -->
+                        </Grid.RowDefinitions>
+
+                        <!-- ── Results card ── -->
+                        <Border Grid.Row="0"
+                                Background="{DynamicResource BackgroundCardBrush}"
+                                CornerRadius="12"
+                                BorderBrush="{DynamicResource BorderStandardBrush}"
+                                BorderThickness="1" Padding="16">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>  <!-- Header row -->
+                                    <RowDefinition Height="*"/>     <!-- Group cards -->
+                                    <RowDefinition Height="Auto"/>  <!-- Timestamp -->
+                                </Grid.RowDefinitions>
+
+                                <!-- Header row: label + actions -->
+                                <Grid Grid.Row="0" Margin="0,0,0,12">
+                                    <TextBlock Text="LAST GENERATED RESULT"
+                                               Foreground="{DynamicResource TextSectionLabelBrush}"
+                                               FontSize="11" FontWeight="Bold"
+                                               VerticalAlignment="Center"/>
+
+                                    <!-- Right-side action buttons -->
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center">
+
+                                        <!-- Mark as Drawn toggle -->
+                                        <Button x:Name="MarkAsDrawnButton"
+                                                Click="MarkAsDrawnButton_Click"
+                                                Cursor="Hand" Margin="0,0,8,0"
+                                                Visibility="Collapsed">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="DrawnBd"
+                                                            Background="Transparent"
+                                                            BorderBrush="{DynamicResource BorderStandardBrush}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="5" Padding="8,3">
+                                                        <TextBlock x:Name="DrawnText"
+                                                                   Text="○ Mark as Drawn"
+                                                                   Foreground="{DynamicResource TextMutedBrush}"
+                                                                   FontSize="11"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="DrawnBd" Property="Background"
+                                                                    Value="{DynamicResource HoverDarkBrush}"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+
+                                        <!-- AI Prompt icon -->
+                                        <Button x:Name="AiPromptButton"
+                                                Click="AiPromptButton_Click"
+                                                Cursor="Hand" Margin="0,0,6,0"
+                                                ToolTip="Copy AI Prompt"
+                                                Visibility="Collapsed">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="Bd" Background="Transparent"
+                                                            CornerRadius="5" Padding="5,3">
+                                                        <Viewbox Width="16" Height="16">
+                                                            <Canvas Width="16" Height="16">
+                                                                <!-- Scroll body -->
+                                                                <Path Data="M3,2 Q3,0 5,0 H13 Q15,0 15,2 V14 Q15,16 13,16 H5 Q3,16 3,14 Z"
+                                                                      Stroke="{DynamicResource NavIconBrush}"
+                                                                      StrokeThickness="1.2"
+                                                                      Fill="Transparent"/>
+                                                                <!-- Lines on scroll -->
+                                                                <Line X1="6" Y1="5" X2="12" Y2="5"
+                                                                      Stroke="{DynamicResource NavIconBrush}"
+                                                                      StrokeThickness="1"/>
+                                                                <Line X1="6" Y1="8" X2="12" Y2="8"
+                                                                      Stroke="{DynamicResource NavIconBrush}"
+                                                                      StrokeThickness="1"/>
+                                                                <Line X1="6" Y1="11" X2="10" Y2="11"
+                                                                      Stroke="{DynamicResource NavIconBrush}"
+                                                                      StrokeThickness="1"/>
+                                                                <!-- Sparkle -->
+                                                                <Path Data="M1,3 L1.5,1.5 L3,1 L1.5,0.5 L1,0 L0.5,0.5 L0,1 L0.5,1.5 Z"
+                                                                      Fill="{DynamicResource AccentBlueBrush}"/>
+                                                            </Canvas>
+                                                        </Viewbox>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Bd" Property="Background"
+                                                                    Value="{DynamicResource HoverDarkBrush}"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+
+                                        <!-- Print icon -->
+                                        <Button x:Name="PrintButton"
+                                                Click="PrintButton_Click"
+                                                Cursor="Hand"
+                                                ToolTip="Print Preview"
+                                                Visibility="Collapsed">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="Bd" Background="Transparent"
+                                                            CornerRadius="5" Padding="5,3">
+                                                        <Viewbox Width="16" Height="16">
+                                                            <Canvas Width="16" Height="16">
+                                                                <!-- Printer body -->
+                                                                <Rectangle Canvas.Left="2" Canvas.Top="5"
+                                                                           Width="12" Height="7" RadiusX="1.5" RadiusY="1.5"
+                                                                           Stroke="{DynamicResource NavIconBrush}"
+                                                                           StrokeThickness="1.2"
+                                                                           Fill="Transparent"/>
+                                                                <!-- Paper top -->
+                                                                <Rectangle Canvas.Left="4" Canvas.Top="1"
+                                                                           Width="8" Height="4"
+                                                                           Stroke="{DynamicResource NavIconBrush}"
+                                                                           StrokeThickness="1.2"
+                                                                           Fill="Transparent"/>
+                                                                <!-- Paper output -->
+                                                                <Rectangle Canvas.Left="4" Canvas.Top="9"
+                                                                           Width="8" Height="5"
+                                                                           Stroke="{DynamicResource NavIconBrush}"
+                                                                           StrokeThickness="1.2"
+                                                                           Fill="{DynamicResource BackgroundCardBrush}"/>
+                                                                <!-- Printer dot -->
+                                                                <Ellipse Canvas.Left="11" Canvas.Top="7"
+                                                                         Width="2" Height="2"
+                                                                         Fill="{DynamicResource NavIconBrush}"/>
+                                                            </Canvas>
+                                                        </Viewbox>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Bd" Property="Background"
+                                                                    Value="{DynamicResource HoverDarkBrush}"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Group cards — injected by code-behind into this panel -->
+                                <ScrollViewer Grid.Row="1"
+                                              VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel>
+                                        <!-- Empty state -->
+                                        <TextBlock x:Name="ResultsEmptyText"
+                                                   Text="No results yet. Hit Generate to get started."
+                                                   Foreground="{DynamicResource EmptyStateBrush}"
+                                                   FontSize="13"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,40,0,40"
+                                                   Visibility="Visible"/>
+                                        <!-- WrapPanel for group cards -->
+                                        <WrapPanel x:Name="ResultGroupCards"
+                                                   Orientation="Horizontal"
+                                                   Margin="0"/>
+                                    </StackPanel>
+                                </ScrollViewer>
+
+                                <!-- Timestamp -->
+                                <TextBlock x:Name="ResultTimestamp"
+                                           Grid.Row="2"
+                                           Foreground="{DynamicResource TextMutedBrush}"
+                                           FontSize="12"
+                                           Margin="0,10,0,0"
+                                           Visibility="Collapsed"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Generate button -->
+                        <Button x:Name="GenerateButton"
+                                Grid.Row="1"
+                                Click="GenerateButton_Click"
+                                Height="46" Margin="0,12,0,0"
+                                Cursor="Hand">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Bd"
+                                            Background="{DynamicResource AccentBlueBrush}"
+                                            CornerRadius="10"
+                                            Opacity="{Binding IsEnabled,
+                                                      RelativeSource={RelativeSource TemplatedParent},
+                                                      Converter={StaticResource EnabledToOpacityConverter}}">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background"
+                                                    Value="{DynamicResource AccentBlueHoverBrush}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="Bd" Property="Background"
+                                                    Value="{DynamicResource AccentBluePressedBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🎲 " FontSize="16" VerticalAlignment="Center"/>
+                                <TextBlock Text="Generate"
+                                           Foreground="White"
+                                           FontSize="15" FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Recent history card -->
+                        <Border Grid.Row="2"
+                                Background="{DynamicResource BackgroundCardBrush}"
+                                CornerRadius="12"
+                                BorderBrush="{DynamicResource BorderStandardBrush}"
+                                BorderThickness="1"
+                                Padding="16,12" Margin="0,12,0,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" Margin="0,0,0,8">
+                                    <TextBlock Text="RECENT HISTORY"
+                                               Foreground="{DynamicResource TextSectionLabelBrush}"
+                                               FontSize="11" FontWeight="Bold"
+                                               VerticalAlignment="Center"/>
+                                    <Button HorizontalAlignment="Right"
+                                            Click="HistoryButton_Click"
+                                            Cursor="Hand">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="Bd"
+                                                        Background="{DynamicResource AccentBlueBrush}"
+                                                        CornerRadius="6" Padding="10,4">
+                                                    <TextBlock Text="View all"
+                                                               Foreground="White"
+                                                               FontSize="12"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Bd" Property="Background"
+                                                                Value="{DynamicResource AccentBlueHoverBrush}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Recent history rows -->
+                                <ItemsControl x:Name="RecentHistoryList" Grid.Row="1">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type local:HistoryEntry}">
+                                            <Border Background="Transparent"
+                                                    CornerRadius="6" Padding="6,8"
+                                                    Cursor="Hand"
+                                                    MouseLeftButtonUp="RecentHistoryItem_Click">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="20"/>  <!-- dot wrapper -->
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- Drawn dot — grey circle or green checkmark -->
+                                                    <Grid Grid.Column="0" Width="12" Height="12"
+                                                          VerticalAlignment="Center">
+                                                        <!-- Grey circle — undrawn -->
+                                                        <Ellipse Width="10" Height="10"
+                                                                 Stroke="{DynamicResource TextMutedBrush}"
+                                                                 StrokeThickness="1.2"
+                                                                 Fill="Transparent"
+                                                                 Visibility="{Binding IsDrawn,
+                                                                              Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                                                        <!-- Green checkmark — drawn -->
+                                                        <Path Data="M2,6 L5,9 L10,3"
+                                                              Stroke="#30d158"
+                                                              StrokeThickness="1.6"
+                                                              StrokeStartLineCap="Round"
+                                                              StrokeEndLineCap="Round"
+                                                              StrokeLineJoin="Round"
+                                                              Visibility="{Binding IsDrawn,
+                                                                           Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                    </Grid>
+
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding Summary}"
+                                                               Foreground="{DynamicResource TextHistoryBrush}"
+                                                               FontSize="13"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="2"
+                                                               Text="{Binding ShortTime}"
+                                                               Foreground="{DynamicResource TextMutedBrush}"
+                                                               FontSize="12"
+                                                               VerticalAlignment="Center"
+                                                               Margin="12,0,0,0"/>
+                                                </Grid>
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background"
+                                                                        Value="{DynamicResource HoverDarkBrush}"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <TextBlock x:Name="RecentHistoryEmptyText"
+                                           Grid.Row="1"
+                                           Text="No history yet. Hit Generate to get started."
+                                           Foreground="{DynamicResource EmptyStateBrush}"
+                                           FontSize="13"
+                                           HorizontalAlignment="Center"
+                                           Padding="0,8,0,0"
+                                           Visibility="Collapsed"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+
+                <!-- ── OTHER PANELS ── -->
+                <local:ManageContentScreen x:Name="ManageContentPanel" Visibility="Collapsed"/>
+                <local:HistoryScreen x:Name="HistoryPanel" Visibility="Collapsed"/>
+                <local:SettingsScreen x:Name="SettingsPanel" Visibility="Collapsed"/>
+                <ContentControl x:Name="OverlayPanel"
+                                Visibility="Collapsed"
+                                Background="{DynamicResource BackgroundOuterBrush}"/>
+
+                <!-- ── PRESET QUICK-LOAD POPUP ── -->
+                <Popup x:Name="PresetPopup"
+                       PlacementTarget="{Binding ElementName=PresetsLinkButton}"
+                       Placement="Bottom"
+                       StaysOpen="False"
+                       AllowsTransparency="True">
+                    <Border Background="{DynamicResource DialogBackgroundBrush}"
+                            BorderBrush="{DynamicResource DialogBorderBrush}"
+                            BorderThickness="1" CornerRadius="8"
+                            MinWidth="280" MaxWidth="360"
+                            Padding="0,6">
+                        <StackPanel>
+                            <!-- Popup header -->
+                            <Grid Margin="12,4,12,8">
+                                <TextBlock Text="PRESETS"
+                                           Foreground="{DynamicResource TextSectionLabelBrush}"
+                                           FontSize="11" FontWeight="Bold"
+                                           VerticalAlignment="Center"/>
+                                <Button Click="OpenPresetsScreen_Click"
+                                        HorizontalAlignment="Right"
+                                        Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <TextBlock Text="Manage →"
+                                                       Foreground="{DynamicResource AccentBlueBrush}"
+                                                       FontSize="11"/>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+
+                            <!-- Preset rows — injected by code-behind -->
+                            <ItemsControl x:Name="PresetPopupList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type local:Preset}">
+                                        <Border Tag="{Binding}"
+                                                MouseLeftButtonUp="PresetPopupRow_Click"
+                                                Cursor="Hand"
+                                                Padding="12,8">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Name}"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                                           FontSize="13"/>
+                                                <TextBlock Text="{Binding Summary}"
+                                                           Foreground="{DynamicResource TextMutedBrush}"
+                                                           FontSize="11"
+                                                           Margin="0,2,0,0"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background"
+                                                                    Value="{DynamicResource HoverDarkBrush}"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Empty state -->
+                            <TextBlock x:Name="PresetPopupEmptyText"
+                                       Text="No presets saved yet."
+                                       Foreground="{DynamicResource EmptyStateBrush}"
+                                       FontSize="12"
+                                       Margin="12,4,12,8"
+                                       Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+
+                <!-- ── TOAST OVERLAY — below title bar, centered ── -->
+                <Border x:Name="ToastBorder"
+                        Background="{DynamicResource BackgroundCardBrush}"
+                        BorderBrush="{DynamicResource BorderStandardBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16,10"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Margin="0,8,0,0"
+                        Visibility="Collapsed"
+                        IsHitTestVisible="False"
+                        Panel.ZIndex="100">
+                    <TextBlock x:Name="ToastText"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               FontSize="13"/>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

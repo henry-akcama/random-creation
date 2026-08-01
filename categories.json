@@ -1,0 +1,244 @@
+{
+  "Collections": [
+    {
+      "Name": "Creatures",
+      "IsEnabled": true,
+      "Groups": [
+        {
+          "Name": "Head",
+          "IsEnabled": true,
+          "Categories": [
+            {
+              "Name": "Head Shape",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Round",        "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Elongated",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Flat",         "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Skull-like",   "Weight": "Low",    "IsEnabled": true },
+                { "Name": "Beak-fronted", "Weight": "Low",    "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Eyes",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Two",       "Weight": "Normal",    "IsEnabled": true },
+                { "Name": "Four",      "Weight": "Normal",    "IsEnabled": true },
+                { "Name": "Compound",  "Weight": "Normal",    "IsEnabled": true },
+                { "Name": "One",       "Weight": "Rare",      "IsEnabled": true },
+                { "Name": "Eyeless",   "Weight": "UltraRare", "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Mouth",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Fanged",     "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Beak",       "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Mandibles",  "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Toothless",  "Weight": "Low",    "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Head Covering",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Scales",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Fur",       "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Feathers",  "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Smooth",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Plated",    "Weight": "Low",    "IsEnabled": true }
+              ]
+            }
+          ]
+        },
+        {
+          "Name": "Body",
+          "IsEnabled": true,
+          "Categories": [
+            {
+              "Name": "Body Shape",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Bulky",      "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Slender",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Serpentine", "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Hunched",    "Weight": "Low",    "IsEnabled": true },
+                { "Name": "Amorphous",  "Weight": "Rare",   "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Body Covering",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Scales",   "Weight": "Normal",    "IsEnabled": true },
+                { "Name": "Fur",      "Weight": "Normal",    "IsEnabled": true },
+                { "Name": "Plates",   "Weight": "Normal",    "IsEnabled": true },
+                { "Name": "Slime",    "Weight": "Low",       "IsEnabled": true },
+                { "Name": "Crystals", "Weight": "UltraRare", "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Body Size",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Tiny",     "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Small",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Medium",   "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Large",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Colossal", "Weight": "Rare",   "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Body Color",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Earthy Brown",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Deep Green",      "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Ashen Grey",      "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Midnight Black",  "Weight": "Low",    "IsEnabled": true },
+                { "Name": "Bioluminescent",  "Weight": "Rare",   "IsEnabled": true }
+              ]
+            }
+          ]
+        },
+        {
+          "Name": "Limbs",
+          "IsEnabled": true,
+          "Categories": [
+            {
+              "Name": "Arm Type",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Muscular",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Tentacle",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Clawed",      "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Winged",      "Weight": "Low",    "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Arm Count",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Two",   "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Four",  "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Six",   "Weight": "Low",    "IsEnabled": true },
+                { "Name": "None",  "Weight": "Rare",   "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Leg Type",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Digitigrade", "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Plantigrade", "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Hooved",      "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Taloned",     "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Stumped",     "Weight": "Low",    "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Leg Count",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Two",   "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Four",  "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Six",   "Weight": "Low",    "IsEnabled": true },
+                { "Name": "Eight", "Weight": "Rare",   "IsEnabled": true },
+                { "Name": "None",  "Weight": "Rare",   "IsEnabled": true }
+              ]
+            }
+          ]
+        },
+        {
+          "Name": "Special Features",
+          "IsEnabled": true,
+          "Categories": [
+            {
+              "Name": "Elemental Affinity",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Fire",      "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Ice",       "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Lightning", "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Poison",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Void",      "Weight": "Rare",   "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Special Appendage",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Tail",       "Weight": "Normal",    "IsEnabled": true },
+                { "Name": "Wings",      "Weight": "Normal",    "IsEnabled": true },
+                { "Name": "Horns",      "Weight": "Normal",    "IsEnabled": true },
+                { "Name": "Spines",     "Weight": "Low",       "IsEnabled": true },
+                { "Name": "Halo",       "Weight": "UltraRare", "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Ability",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Regeneration",    "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Camouflage",      "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Venom",           "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Echolocation",    "Weight": "Low",    "IsEnabled": true },
+                { "Name": "Teleportation",   "Weight": "Rare",   "IsEnabled": true }
+              ]
+            }
+          ]
+        },
+        {
+          "Name": "Behavior",
+          "IsEnabled": true,
+          "Categories": [
+            {
+              "Name": "Temperament",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Aggressive",  "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Timid",       "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Curious",     "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Territorial", "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Docile",      "Weight": "Low",    "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Diet",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Carnivore",  "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Herbivore",  "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Omnivore",   "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Scavenger",  "Weight": "Low",    "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Habitat",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Forest",     "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Desert",     "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Ocean",      "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Mountain",   "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Underground","Weight": "Low",    "IsEnabled": true }
+              ]
+            },
+            {
+              "Name": "Social Structure",
+              "IsEnabled": true,
+              "Options": [
+                { "Name": "Solitary",   "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Pack",       "Weight": "Normal", "IsEnabled": true },
+                { "Name": "Hive Mind",  "Weight": "Rare",   "IsEnabled": true },
+                { "Name": "Symbiotic",  "Weight": "Low",    "IsEnabled": true }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

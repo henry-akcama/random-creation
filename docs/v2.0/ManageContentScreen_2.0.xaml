@@ -1,0 +1,675 @@
+<UserControl x:Class="RandomCreation.ManageContentScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:RandomCreation"
+             Background="{DynamicResource BackgroundOuterBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44"/>  <!-- Title bar -->
+            <RowDefinition Height="*"/>   <!-- Two-panel content -->
+        </Grid.RowDefinitions>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             TITLE BAR
+             ══════════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource BackgroundTitleBarBrush}"
+                BorderBrush="{DynamicResource BorderStandardBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid Margin="12,0">
+
+                <!-- Back button -->
+                <Button Click="BackButton_Click" Cursor="Hand"
+                        HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Bd" Background="Transparent"
+                                    CornerRadius="6" Padding="6,4">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="← "
+                                               Foreground="{DynamicResource AccentBlueBrush}"
+                                               FontSize="14"/>
+                                    <TextBlock Text="Back"
+                                               Foreground="{DynamicResource AccentBlueBrush}"
+                                               FontSize="14" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background"
+                                            Value="{DynamicResource HoverBackButtonBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <!-- Title -->
+                <TextBlock Text="Manage Content"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           FontSize="14" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <!-- Presets button — bookmark icon -->
+                <Button Click="PresetsButton_Click" Cursor="Hand"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        ToolTip="Presets">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Bd" Background="Transparent"
+                                    CornerRadius="6" Padding="7,5"
+                                    Width="34" Height="32">
+                                <Viewbox Width="14" Height="16">
+                                    <Canvas Width="16" Height="18">
+                                        <Path Data="M2,2 H14 V16 L8,12 L2,16 Z"
+                                              Stroke="{DynamicResource NavIconBrush}"
+                                              StrokeThickness="1.4"
+                                              StrokeLineJoin="Round"
+                                              Fill="Transparent"/>
+                                    </Canvas>
+                                </Viewbox>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background"
+                                            Value="{DynamicResource HoverDarkBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             TWO-PANEL LAYOUT
+             Left: resizable sidebar (collections top + categories bottom)
+             Right: options panel
+             ══════════════════════════════════════════════════════════════════ -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="SidebarColumn" Width="280" MinWidth="280" MaxWidth="400"/>
+                <ColumnDefinition Width="4"/>   <!-- GridSplitter -->
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ── LEFT SIDEBAR ── -->
+            <Border Grid.Column="0"
+                    Background="{DynamicResource BackgroundTitleBarBrush}"
+                    BorderBrush="{DynamicResource BorderStandardBrush}"
+                    BorderThickness="0,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>  <!-- Collections zone -->
+                        <RowDefinition Height="Auto"/>  <!-- Divider -->
+                        <RowDefinition Height="*"/>     <!-- Categories zone -->
+                    </Grid.RowDefinitions>
+
+                    <!-- ── COLLECTIONS ZONE (top) ── -->
+                    <Grid Grid.Row="0" x:Name="CollectionsZone">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>  <!-- Header -->
+                            <RowDefinition Height="Auto"/>  <!-- Collection rows -->
+                            <RowDefinition Height="Auto"/>  <!-- Empty state -->
+                        </Grid.RowDefinitions>
+
+                        <!-- Collections header row -->
+                        <Grid Grid.Row="0" Margin="14,12,10,6">
+                            <TextBlock Text="COLLECTIONS"
+                                       Foreground="{DynamicResource TextSectionLabelBrush}"
+                                       FontSize="11" FontWeight="Bold"
+                                       VerticalAlignment="Center"/>
+                            <!-- Gear icon → Collections Management -->
+                            <Button Click="ManageCollectionsButton_Click"
+                                    Cursor="Hand" HorizontalAlignment="Right"
+                                    VerticalAlignment="Center" ToolTip="Manage Collections">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Bd" Background="Transparent"
+                                                CornerRadius="4" Padding="4,3">
+                                            <TextBlock Text="⚙"
+                                                       Foreground="{DynamicResource TextMutedBrush}"
+                                                       FontSize="14"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background"
+                                                        Value="{DynamicResource HoverDarkBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+
+                        <!-- Collection rows -->
+                        <ItemsControl x:Name="CollectionList"
+                                      Grid.Row="1"
+                                      Margin="8,0,8,4">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:CollectionViewModel}">
+                                    <Border x:Name="CollectionRowBorder"
+                                            Background="{Binding RowBackground}"
+                                            BorderBrush="{Binding RowBorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="8,7" Margin="0,2,0,0"
+                                            Cursor="Hand"
+                                            MouseLeftButtonUp="CollectionRow_Click"
+                                            Tag="{Binding}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Name}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       FontSize="13" FontWeight="Medium"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background"
+                                                                Value="{DynamicResource HoverDarkBrush}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Collections empty state -->
+                        <TextBlock x:Name="CollectionsEmptyText"
+                                   Grid.Row="2"
+                                   Text="No collections yet. Tap ⚙ to add one."
+                                   Foreground="{DynamicResource EmptyStateBrush}"
+                                   FontSize="11"
+                                   TextWrapping="Wrap"
+                                   Margin="14,6,14,6"
+                                   Visibility="Collapsed"/>
+                    </Grid>
+
+                    <!-- Divider between zones -->
+                    <Border Grid.Row="1"
+                            Background="{DynamicResource BorderStandardBrush}"
+                            Height="1" Margin="0,4,0,4"/>
+
+                    <!-- ── CATEGORIES ZONE (bottom) ── -->
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>  <!-- Header + bulk controls -->
+                            <RowDefinition Height="Auto"/>  <!-- Add button -->
+                            <RowDefinition Height="*"/>     <!-- Category list -->
+                        </Grid.RowDefinitions>
+
+                        <!-- Categories header + bulk controls -->
+                        <Grid Grid.Row="0" Margin="14,8,10,4">
+                            <TextBlock x:Name="CategoriesZoneLabel"
+                                       Text="CATEGORIES"
+                                       Foreground="{DynamicResource TextSectionLabelBrush}"
+                                       FontSize="11" FontWeight="Bold"
+                                       VerticalAlignment="Center"/>
+                            <!-- Bulk enable/disable — text links right aligned -->
+                            <StackPanel x:Name="CategoryBulkControls"
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Visibility="Collapsed">
+                                <TextBlock Text="Enable All"
+                                           Foreground="{DynamicResource ResultOptionBrush}"
+                                           FontSize="10" Cursor="Hand"
+                                           Margin="0,0,4,0"
+                                           MouseLeftButtonUp="BulkEnableCategories_Click"/>
+                                <TextBlock Text="·"
+                                           Foreground="{DynamicResource BorderStandardBrush}"
+                                           FontSize="10" Margin="0,0,4,0"/>
+                                <TextBlock Text="Disable All"
+                                           Foreground="{DynamicResource TextMutedBrush}"
+                                           FontSize="10" Cursor="Hand"
+                                           MouseLeftButtonUp="BulkDisableCategories_Click"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Add Category button -->
+                        <Button x:Name="AddCategoryButton"
+                                Grid.Row="1"
+                                Click="AddCategoryButton_Click"
+                                Margin="8,0,8,6" Height="32"
+                                Cursor="Hand">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Bd"
+                                            Background="{DynamicResource AccentBlueBrush}"
+                                            CornerRadius="8" Padding="8,0"
+                                            Opacity="{Binding IsEnabled,
+                                                      RelativeSource={RelativeSource TemplatedParent},
+                                                      Converter={StaticResource EnabledToOpacityConverter}}">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background"
+                                                    Value="{DynamicResource AccentBlueHoverBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <TextBlock x:Name="AddCategoryButtonText"
+                                       Text="＋ Add Category"
+                                       Foreground="White"
+                                       FontSize="12" FontWeight="SemiBold"/>
+                        </Button>
+
+                        <!-- Category list -->
+                        <ScrollViewer x:Name="CategoryScrollViewer"
+                                      Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                            <Grid>
+                                <!-- Empty state -->
+                                <TextBlock x:Name="CategoriesEmptyText"
+                                           Text="No categories yet. Add one above."
+                                           Foreground="{DynamicResource EmptyStateBrush}"
+                                           FontSize="11" TextWrapping="Wrap"
+                                           Margin="14,8" Visibility="Collapsed"/>
+
+                                <!-- Category items -->
+                                <ItemsControl x:Name="CategoryList"
+                                              Margin="8,0,8,8"
+                                              AllowDrop="True"
+                                              Drop="CategoryList_Drop"
+                                              PreviewMouseLeftButtonDown="CategoryList_PreviewMouseDown"
+                                              PreviewMouseMove="CategoryList_PreviewMouseMove">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type local:CategoryViewModel}">
+                                            <StackPanel Tag="{Binding}"
+                                                        Opacity="{Binding IsEnabled,
+                                                                  Converter={StaticResource EnabledToOpacityConverter}}">
+                                                <!-- Main row -->
+                                                <Border Background="{Binding RowBackground}"
+                                                        CornerRadius="{Binding RowCornerRadius}"
+                                                        BorderBrush="{Binding RowBorderBrush}"
+                                                        BorderThickness="1"
+                                                        Padding="8,7" Margin="0,2,0,0"
+                                                        Cursor="Hand"
+                                                        MouseLeftButtonUp="CategoryRow_Click"
+                                                        Tag="{Binding}">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="⠿"
+                                                                   Foreground="{DynamicResource BorderSelectedBrush}"
+                                                                   FontSize="14"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0,0,8,0" Cursor="SizeAll"
+                                                                   Tag="{Binding}"
+                                                                   MouseMove="DragHandle_MouseMove"/>
+                                                        <TextBlock Grid.Column="1"
+                                                                   Text="{Binding Name}"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                   FontSize="12"
+                                                                   VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Grid.Column="2"
+                                                                   Text="{Binding OptionCount}"
+                                                                   Foreground="{DynamicResource TextMutedBrush}"
+                                                                   FontSize="11"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="4,0"/>
+                                                        <!-- ON/OFF pill toggle -->
+                                                        <local:PillToggle Grid.Column="3"
+                                                                          IsOn="{Binding IsEnabled, Mode=TwoWay}"
+                                                                          Toggled="CategoryToggle_Toggled"
+                                                                          Tag="{Binding}"
+                                                                          VerticalAlignment="Center"/>
+                                                    </Grid>
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="BorderBrush"
+                                                                            Value="{DynamicResource BorderSelectedBrush}"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                </Border>
+
+                                                <!-- Sub-row: rename/delete (selected only) -->
+                                                <Border Visibility="{Binding SubRowVisibility}"
+                                                        Background="{DynamicResource BackgroundExpandedBrush}"
+                                                        CornerRadius="0,0,8,8"
+                                                        BorderBrush="{DynamicResource BorderSelectedBrush}"
+                                                        BorderThickness="1,0,1,1"
+                                                        Padding="10,5" Margin="0,0,0,2">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0"
+                                                                   Text="{Binding RenameLabel}"
+                                                                   Foreground="{DynamicResource TextMutedBrush}"
+                                                                   FontSize="11"
+                                                                   VerticalAlignment="Center"
+                                                                   FontStyle="Italic"/>
+                                                        <!-- Rename -->
+                                                        <Button Grid.Column="1"
+                                                                Click="RenameCategoryButton_Click"
+                                                                Tag="{Binding}"
+                                                                Cursor="Hand" ToolTip="Rename">
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border x:Name="Bd" Background="Transparent"
+                                                                            CornerRadius="4" Padding="6,2">
+                                                                        <TextBlock Text="✎"
+                                                                                   Foreground="{DynamicResource ResultOptionBrush}"
+                                                                                   FontSize="14"/>
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter TargetName="Bd" Property="Background"
+                                                                                    Value="{DynamicResource HoverDarkBrush}"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
+                                                        <!-- Delete -->
+                                                        <Button Grid.Column="2"
+                                                                Click="DeleteCategoryButton_Click"
+                                                                Tag="{Binding}"
+                                                                Cursor="Hand" ToolTip="Delete">
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border x:Name="Bd" Background="Transparent"
+                                                                            CornerRadius="4" Padding="6,2">
+                                                                        <TextBlock Text="🗑"
+                                                                                   Foreground="{DynamicResource DeleteForegroundBrush}"
+                                                                                   FontSize="14"/>
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter TargetName="Bd" Property="Background"
+                                                                                    Value="{DynamicResource HoverDarkBrush}"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
+                                                    </Grid>
+                                                </Border>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- ── GRID SPLITTER — resizable sidebar edge ── -->
+            <GridSplitter Grid.Column="1"
+                          Width="4"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Background="{DynamicResource BorderStandardBrush}"
+                          Cursor="SizeWE"
+                          DragCompleted="Splitter_DragCompleted">
+                <GridSplitter.Style>
+                    <Style TargetType="GridSplitter">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background"
+                                        Value="{DynamicResource AccentBlueBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </GridSplitter.Style>
+            </GridSplitter>
+
+            <!-- ── RIGHT PANEL — Options ── -->
+            <Grid Grid.Column="2" Margin="20,12,16,12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>  <!-- Header -->
+                    <RowDefinition Height="*"/>     <!-- Options list -->
+                </Grid.RowDefinitions>
+
+                <!-- Options header -->
+                <Grid Grid.Row="0" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock x:Name="RightPanelTitle"
+                                   Text="Select a category"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   FontSize="16" FontWeight="SemiBold"/>
+                        <!-- Bulk enable/disable for options -->
+                        <StackPanel x:Name="OptionBulkControls"
+                                    Orientation="Horizontal"
+                                    Margin="0,3,0,0"
+                                    Visibility="Collapsed">
+                            <TextBlock Text="Enable All"
+                                       Foreground="{DynamicResource ResultOptionBrush}"
+                                       FontSize="10" Cursor="Hand"
+                                       Margin="0,0,4,0"
+                                       MouseLeftButtonUp="BulkEnableOptions_Click"/>
+                            <TextBlock Text="·"
+                                       Foreground="{DynamicResource BorderStandardBrush}"
+                                       FontSize="10" Margin="0,0,4,0"/>
+                            <TextBlock Text="Disable All"
+                                       Foreground="{DynamicResource TextMutedBrush}"
+                                       FontSize="10" Cursor="Hand"
+                                       MouseLeftButtonUp="BulkDisableOptions_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Add Option button -->
+                    <Button x:Name="AddOptionButton"
+                            Grid.Column="1"
+                            Click="AddOptionButton_Click"
+                            Visibility="Collapsed"
+                            Height="32" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Bd"
+                                        Background="{DynamicResource AccentBlueBrush}"
+                                        CornerRadius="8" Padding="12,0">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background"
+                                                Value="{DynamicResource AccentBlueHoverBrush}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <TextBlock Text="＋  Add option" Foreground="White"
+                                   FontSize="12" FontWeight="SemiBold"/>
+                    </Button>
+                </Grid>
+
+                <!-- Options list -->
+                <Grid Grid.Row="1">
+                    <!-- Empty states -->
+                    <TextBlock x:Name="SelectCategoryText"
+                               Text="Select a category to view its options."
+                               Foreground="{DynamicResource EmptyStateBrush}"
+                               FontSize="13"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Visibility="Visible"/>
+
+                    <TextBlock x:Name="OptionsEmptyText"
+                               Text="No options yet. Add one above."
+                               Foreground="{DynamicResource EmptyStateBrush}"
+                               FontSize="13"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Visibility="Collapsed"/>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  Visibility="Collapsed"
+                                  x:Name="OptionsScrollViewer">
+                        <ItemsControl x:Name="OptionsList"
+                                      AllowDrop="True"
+                                      Drop="OptionsList_Drop"
+                                      PreviewMouseLeftButtonDown="OptionsList_PreviewMouseDown"
+                                      PreviewMouseMove="OptionsList_PreviewMouseMove">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:OptionViewModel}">
+                                    <Border Background="{DynamicResource BackgroundCardBrush}"
+                                            CornerRadius="8"
+                                            BorderBrush="{DynamicResource BorderStandardBrush}"
+                                            BorderThickness="1"
+                                            Padding="12,9" Margin="0,0,0,6"
+                                            Tag="{Binding}"
+                                            Opacity="{Binding IsEnabled,
+                                                      Converter={StaticResource EnabledToOpacityConverter}}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>  <!-- Drag -->
+                                                <ColumnDefinition Width="Auto"/>  <!-- Pill -->
+                                                <ColumnDefinition Width="*"/>     <!-- Name -->
+                                                <ColumnDefinition Width="Auto"/>  <!-- Weight -->
+                                                <ColumnDefinition Width="44"/>    <!-- Pct -->
+                                                <ColumnDefinition Width="Auto"/>  <!-- Edit -->
+                                                <ColumnDefinition Width="Auto"/>  <!-- Delete -->
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Drag handle -->
+                                            <TextBlock Grid.Column="0" Text="⠿"
+                                                       Foreground="{DynamicResource BorderSelectedBrush}"
+                                                       FontSize="14"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0" Cursor="SizeAll"
+                                                       Tag="{Binding}"
+                                                       MouseMove="OptionDragHandle_MouseMove"/>
+
+                                            <!-- ON/OFF pill -->
+                                            <local:PillToggle Grid.Column="1"
+                                                              IsOn="{Binding IsEnabled, Mode=TwoWay}"
+                                                              Toggled="OptionToggle_Toggled"
+                                                              Tag="{Binding}"
+                                                              VerticalAlignment="Center"
+                                                              Margin="0,0,8,0"/>
+
+                                            <!-- Option name -->
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding Name}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"/>
+
+                                            <!-- Weight badge -->
+                                            <Border Grid.Column="3"
+                                                    Background="{Binding WeightBackground}"
+                                                    CornerRadius="4" Padding="8,3"
+                                                    Margin="8,0" Cursor="Hand"
+                                                    MouseLeftButtonUp="WeightBadge_Click"
+                                                    Tag="{Binding}">
+                                                <TextBlock Text="{Binding WeightLabel}"
+                                                           Foreground="{Binding WeightForeground}"
+                                                           FontSize="12" FontWeight="SemiBold"/>
+                                            </Border>
+
+                                            <!-- Percentage -->
+                                            <TextBlock Grid.Column="4"
+                                                       Text="{Binding PercentageDisplay}"
+                                                       Foreground="{DynamicResource TextMutedBrush}"
+                                                       FontSize="12"
+                                                       VerticalAlignment="Center"
+                                                       HorizontalAlignment="Right"
+                                                       Margin="0,0,4,0"/>
+
+                                            <!-- Edit -->
+                                            <Button Grid.Column="5"
+                                                    Click="EditOptionButton_Click"
+                                                    Tag="{Binding}"
+                                                    Cursor="Hand" ToolTip="Edit">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border x:Name="Bd" Background="Transparent"
+                                                                CornerRadius="4" Padding="6,2">
+                                                            <TextBlock Text="✎"
+                                                                       Foreground="{DynamicResource ResultOptionBrush}"
+                                                                       FontSize="14"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="Bd" Property="Background"
+                                                                        Value="{DynamicResource HoverDarkBrush}"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+
+                                            <!-- Delete -->
+                                            <Button Grid.Column="6"
+                                                    Click="DeleteOptionButton_Click"
+                                                    Tag="{Binding}"
+                                                    Cursor="Hand" ToolTip="Delete">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border x:Name="Bd" Background="Transparent"
+                                                                CornerRadius="4" Padding="6,2">
+                                                            <TextBlock Text="🗑"
+                                                                       Foreground="{DynamicResource DeleteForegroundBrush}"
+                                                                       FontSize="14"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="Bd" Property="Background"
+                                                                        Value="{DynamicResource HoverDarkBrush}"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+                                        </Grid>
+
+                                        <!-- Row hover -->
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="BorderBrush"
+                                                                Value="{DynamicResource BorderSelectedBrush}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <!-- Drag overlay — spans entire screen, drawn on top, mouse transparent -->
+        <Canvas x:Name="DragOverlay"
+                Grid.RowSpan="2"
+                IsHitTestVisible="False"
+                Visibility="Collapsed"/>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,164 @@
+<Window x:Class="RandomCreation.SavePresetDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:RandomCreation"
+        Background="Transparent"
+        Width="420"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        SizeToContent="Height">
+
+    <Border Background="{DynamicResource DialogBackgroundBrush}"
+            CornerRadius="10"
+            BorderBrush="{DynamicResource DialogBorderBrush}"
+            BorderThickness="1">
+        <Grid Margin="24,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>  <!-- Title -->
+                <RowDefinition Height="Auto"/>  <!-- New name label -->
+                <RowDefinition Height="Auto"/>  <!-- New name input -->
+                <RowDefinition Height="Auto"/>  <!-- Error text -->
+                <RowDefinition Height="Auto"/>  <!-- Divider -->
+                <RowDefinition Height="Auto"/>  <!-- Existing list label -->
+                <RowDefinition Height="Auto"/>  <!-- Existing presets list -->
+                <RowDefinition Height="Auto"/>  <!-- Buttons -->
+            </Grid.RowDefinitions>
+
+            <!-- Title -->
+            <TextBlock Grid.Row="0"
+                       Text="Save Current State"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       FontSize="15" FontWeight="SemiBold"
+                       Margin="0,0,0,14"/>
+
+            <!-- New name label -->
+            <TextBlock Grid.Row="1"
+                       Text="Save as new preset"
+                       Foreground="{DynamicResource TextMutedBrush}"
+                       FontSize="12" Margin="0,0,0,6"/>
+
+            <!-- New name input -->
+            <Border Grid.Row="2"
+                    Background="{DynamicResource BackgroundInputBrush}"
+                    BorderBrush="{DynamicResource BorderStandardBrush}"
+                    BorderThickness="1" CornerRadius="6">
+                <TextBox x:Name="NameInput"
+                         Background="Transparent"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         BorderThickness="0"
+                         FontSize="13" Padding="8,6"
+                         CaretBrush="{DynamicResource TextPrimaryBrush}"
+                         TextChanged="NameInput_TextChanged"
+                         KeyDown="NameInput_KeyDown"/>
+            </Border>
+
+            <!-- Error text -->
+            <TextBlock x:Name="ErrorText" Grid.Row="3"
+                       Foreground="#e05050" FontSize="11"
+                       TextWrapping="Wrap" Margin="0,5,0,0"
+                       Visibility="Collapsed"/>
+
+            <!-- Divider -->
+            <Grid Grid.Row="4" Margin="0,12,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Height="1"
+                        Background="{DynamicResource BorderStandardBrush}"
+                        VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1"
+                           Text="or overwrite existing"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           FontSize="11" Margin="10,0"/>
+                <Border Grid.Column="2" Height="1"
+                        Background="{DynamicResource BorderStandardBrush}"
+                        VerticalAlignment="Center"/>
+            </Grid>
+
+            <!-- Existing presets list -->
+            <Border Grid.Row="6"
+                    Background="{DynamicResource BackgroundInputBrush}"
+                    BorderBrush="{DynamicResource BorderStandardBrush}"
+                    BorderThickness="1" CornerRadius="6"
+                    MaxHeight="160">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="ExistingPresetsList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:Preset}">
+                                <Border x:Name="ItemBorder"
+                                        Padding="10,8"
+                                        Cursor="Hand"
+                                        MouseLeftButtonUp="ExistingPreset_Click"
+                                        Tag="{Binding}">
+                                    <TextBlock Text="{Binding Name}"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                               FontSize="13"/>
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background"
+                                                            Value="{DynamicResource HoverDarkBrush}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="7" Orientation="Horizontal"
+                        HorizontalAlignment="Right" Margin="0,14,0,0">
+                <Button Click="CancelButton_Click" Cursor="Hand" Margin="0,0,8,0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Bd"
+                                    Background="{DynamicResource ButtonDarkBrush}"
+                                    CornerRadius="6" Padding="18,7">
+                                <TextBlock Text="Cancel"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           FontSize="13"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background"
+                                            Value="{DynamicResource ButtonDarkHoverBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="SaveButton"
+                        Click="SaveButton_Click"
+                        Cursor="Hand" IsDefault="True">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Bd"
+                                    Background="{DynamicResource AccentBlueBrush}"
+                                    CornerRadius="6" Padding="18,7">
+                                <TextBlock Text="Save"
+                                           Foreground="White"
+                                           FontSize="13"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background"
+                                            Value="{DynamicResource AccentBlueHoverBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

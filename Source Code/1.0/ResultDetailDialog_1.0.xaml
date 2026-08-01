@@ -1,0 +1,61 @@
+<Window x:Class="CreatureCrafter.ResultDetailDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:CreatureCrafter"
+        Title="Result Detail"
+        Width="560" Height="460"
+        MinWidth="400" MinHeight="300"
+        Background="#1c1c1e"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Timestamp header -->
+        <TextBlock x:Name="TimestampLabel" Grid.Row="0"
+                   Foreground="#a0a0a8" FontSize="12"
+                   Margin="0,0,0,14"/>
+
+        <!-- 5-column result pair cards (matches main screen layout) -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="PairsList">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="5"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:ResultPair}">
+                        <Border Background="#2a2a2e" CornerRadius="8"
+                                BorderBrush="#3a3a3c" BorderThickness="1"
+                                Padding="12,8" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Category}"
+                                           Foreground="#e0e0e0"
+                                           FontSize="11" FontWeight="Medium"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{Binding Option}"
+                                           Foreground="#60aaff"
+                                           FontSize="13" FontWeight="SemiBold"
+                                           TextWrapping="Wrap"
+                                           Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Close button -->
+        <Button Grid.Row="2" Content="Close"
+                Click="CloseButton_Click"
+                Background="#3a3a3c" Foreground="#e0e0e0"
+                BorderBrush="Transparent" Padding="20,8"
+                HorizontalAlignment="Right"
+                Margin="0,14,0,0" Cursor="Hand" IsCancel="True"/>
+    </Grid>
+</Window>

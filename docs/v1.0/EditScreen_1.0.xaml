@@ -1,0 +1,315 @@
+<UserControl x:Class="CreatureCrafter.EditScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:CreatureCrafter"
+             Background="#1c1c1e">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title bar -->
+        <Border Grid.Row="0" Background="#161618"
+                BorderBrush="#3a3a3c" BorderThickness="0,0,0,1">
+            <Grid Margin="12,0">
+                <Button Click="BackButton_Click"
+                        Cursor="Hand"
+                        HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Bd" Background="Transparent" CornerRadius="6" Padding="6,4">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="← " Foreground="#0a84ff" FontSize="14"/>
+                                    <TextBlock Text="Back" Foreground="#0a84ff" FontSize="14" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background" Value="#1a2a3a"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <TextBlock Text="Edit Categories" Foreground="#e0e0e0"
+                           FontSize="14" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Two-panel layout -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ── LEFT SIDEBAR ── -->
+            <Border Grid.Column="0" Background="#161618"
+                    BorderBrush="#3a3a3c" BorderThickness="0,0,1,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="CATEGORIES"
+                               Foreground="#c0c0c8" FontSize="11" FontWeight="Bold"
+                               Margin="16,16,16,8"/>
+
+                    <Button Grid.Row="1" Click="AddCategoryButton_Click"
+                            Margin="12,0,12,8" Height="34"
+                            BorderBrush="Transparent" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Bd" Background="#0a84ff" CornerRadius="8" Padding="8,0">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="#1a8fff"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <TextBlock Text="＋  Add Category" Foreground="White"
+                                   FontSize="13" FontWeight="SemiBold"/>
+                    </Button>
+
+                    <!-- Drag-and-drop category list -->
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="CategoryList"
+                                      Margin="8,0,8,8"
+                                      AllowDrop="True"
+                                      Drop="CategoryList_Drop"
+                                      PreviewMouseLeftButtonDown="CategoryList_PreviewMouseDown"
+                                      PreviewMouseMove="CategoryList_PreviewMouseMove">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:CategoryViewModel}">
+                                    <StackPanel Tag="{Binding}">
+                                        <!-- Main category row -->
+                                        <Border x:Name="CatRowBorder"
+                                                Background="{Binding RowBackground}"
+                                                CornerRadius="{Binding RowCornerRadius}"
+                                                BorderBrush="{Binding RowBorderBrush}"
+                                                BorderThickness="1"
+                                                Padding="8,8" Margin="0,2,0,0"
+                                                Cursor="Hand"
+                                                MouseLeftButtonUp="CategoryRow_Click"
+                                                Tag="{Binding}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="⠿"
+                                                           Foreground="#555" FontSize="14"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,8,0" Cursor="SizeAll"
+                                                           Tag="{Binding}"
+                                                           MouseMove="DragHandle_MouseMove"/>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Name}"
+                                                           Foreground="#e0e0e0" FontSize="13"
+                                                           VerticalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Grid.Column="2"
+                                                           Text="{Binding OptionCount}"
+                                                           Foreground="#a0a0a8" FontSize="12"
+                                                           VerticalAlignment="Center"
+                                                           Margin="6,0"/>
+                                                <local:ToggleSwitch Grid.Column="3"
+                                                    IsOn="{Binding IsEnabled, Mode=TwoWay}"
+                                                    Toggled="Toggle_Toggled"
+                                                    Tag="{Binding}"
+                                                    VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Sub-row: rename / delete (visible when selected) -->
+                                        <Border Visibility="{Binding SubRowVisibility}"
+                                                Background="#1e1e22"
+                                                CornerRadius="0,0,8,8"
+                                                BorderBrush="#4a4a4e"
+                                                BorderThickness="1,0,1,1"
+                                                Padding="12,6" Margin="0,0,0,2">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{Binding RenameLabel}"
+                                                           Foreground="#a0a0a8" FontSize="12"
+                                                           VerticalAlignment="Center"
+                                                           FontStyle="Italic"/>
+                                                <Button Grid.Column="1"
+                                                        Click="RenameCategoryButton_Click"
+                                                        Tag="{Binding}"
+                                                        Cursor="Hand" Padding="6,2" ToolTip="Rename">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border x:Name="Bd" Background="Transparent" CornerRadius="4" Padding="6,2">
+                                                                <TextBlock Text="✎" Foreground="#60aaff" FontSize="14"/>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter TargetName="Bd" Property="Background" Value="#2f2f35"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+                                                <Button Grid.Column="2"
+                                                        Click="DeleteCategoryButton_Click"
+                                                        Tag="{Binding}"
+                                                        Cursor="Hand" Padding="6,2" ToolTip="Delete">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border x:Name="Bd" Background="Transparent" CornerRadius="4" Padding="6,2">
+                                                                <TextBlock Text="🗑" Foreground="#e05050" FontSize="14"/>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter TargetName="Bd" Property="Background" Value="#2f2f35"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <!-- ── RIGHT PANEL ── -->
+            <Grid Grid.Column="1" Margin="20,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="0,0,0,12">
+                    <TextBlock x:Name="RightPanelTitle"
+                               Text="Select a category"
+                               Foreground="#e0e0e0" FontSize="18" FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                    <Button x:Name="AddOptionButton"
+                            Click="AddOptionButton_Click"
+                            Visibility="Collapsed"
+                            HorizontalAlignment="Right"
+                            Height="32" BorderBrush="Transparent" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Bd" Background="#0a84ff" CornerRadius="8" Padding="12,0">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="#1a8fff"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <TextBlock Text="＋  Add option" Foreground="White"
+                                   FontSize="13" FontWeight="SemiBold"/>
+                    </Button>
+                </Grid>
+
+                <!-- Drag-and-drop options list -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="OptionsList"
+                                  AllowDrop="True"
+                                  Drop="OptionsList_Drop"
+                                  PreviewMouseLeftButtonDown="OptionsList_PreviewMouseDown"
+                                  PreviewMouseMove="OptionsList_PreviewMouseMove">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:OptionViewModel}">
+                                <Border Background="#2a2a2e" CornerRadius="8"
+                                        BorderBrush="#3a3a3c" BorderThickness="1"
+                                        Padding="12,10" Margin="0,0,0,6"
+                                        Tag="{Binding}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="⠿"
+                                                   Foreground="#555" FontSize="14"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,10,0" Cursor="SizeAll"
+                                                   Tag="{Binding}"
+                                                   MouseMove="OptionDragHandle_MouseMove"/>
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Name}"
+                                                   Foreground="#e0e0e0" FontSize="13"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <Border Grid.Column="2"
+                                                Background="{Binding WeightBackground}"
+                                                CornerRadius="4" Padding="8,3"
+                                                Margin="8,0" Cursor="Hand"
+                                                MouseLeftButtonUp="WeightBadge_Click"
+                                                Tag="{Binding}">
+                                            <TextBlock Text="{Binding WeightLabel}"
+                                                       Foreground="{Binding WeightForeground}"
+                                                       FontSize="12" FontWeight="SemiBold"/>
+                                        </Border>
+                                        <Button Grid.Column="3"
+                                                Click="EditOptionButton_Click"
+                                                Tag="{Binding}"
+                                                Cursor="Hand" Padding="6,2" ToolTip="Edit">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="Bd" Background="Transparent" CornerRadius="4" Padding="6,2">
+                                                        <TextBlock Text="✎" Foreground="#60aaff" FontSize="14"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Bd" Property="Background" Value="#2f2f35"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                        <Button Grid.Column="4"
+                                                Click="DeleteOptionButton_Click"
+                                                Tag="{Binding}"
+                                                Cursor="Hand" Padding="6,2" ToolTip="Delete">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="Bd" Background="Transparent" CornerRadius="4" Padding="6,2">
+                                                        <TextBlock Text="🗑" Foreground="#e05050" FontSize="14"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Bd" Property="Background" Value="#2f2f35"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

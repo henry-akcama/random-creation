@@ -1,0 +1,80 @@
+<Window x:Class="RandomCreation.PrintPreviewDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Print Preview"
+        Width="860" Height="900"
+        Background="Transparent"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStyle="None"
+        AllowsTransparency="True">
+
+    <Border Background="{DynamicResource BackgroundOuterBrush}"
+            BorderBrush="{DynamicResource BorderStandardBrush}"
+            BorderThickness="1" CornerRadius="10">
+        <Grid Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>    <!-- Paper preview -->
+                <RowDefinition Height="Auto"/> <!-- Footer buttons -->
+            </Grid.RowDefinitions>
+
+            <!-- Paper preview — white A4-proportioned border -->
+            <Border Grid.Row="0"
+                    Background="White"
+                    BorderBrush="#e0e0e0"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel x:Name="PrintContent" Margin="48,40,48,40">
+                        <!-- Populated by code-behind -->
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Footer buttons -->
+            <Grid Grid.Row="1" Margin="0,12,0,0">
+                <Button Click="CloseButton_Click" HorizontalAlignment="Left"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Bd" Background="{DynamicResource ButtonDarkBrush}"
+                                    CornerRadius="6" Padding="16,7">
+                                <TextBlock Text="Close"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           FontSize="13"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background"
+                                            Value="{DynamicResource ButtonDarkHoverBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button Click="PrintButton_Click" HorizontalAlignment="Right"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Bd" Background="{DynamicResource AccentBlueBrush}"
+                                    CornerRadius="6" Padding="16,7">
+                                <TextBlock Text="🖨 Print…"
+                                           Foreground="White"
+                                           FontSize="13"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background"
+                                            Value="{DynamicResource AccentBlueHoverBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

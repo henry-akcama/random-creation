@@ -1,0 +1,53 @@
+<UserControl x:Class="RandomCreation.PillToggle"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:RandomCreation">
+
+    <!-- ON/OFF pill toggle. Uses Style triggers with DynamicResource so colors
+         update correctly when the theme switches. -->
+
+    <Border x:Name="PillBorder"
+            CornerRadius="10"
+            Padding="8,3"
+            Cursor="Hand"
+            MouseLeftButtonUp="Pill_Click"
+            BorderThickness="1">
+
+        <Border.Style>
+            <Style TargetType="Border">
+                <!-- Default: OFF state -->
+                <Setter Property="Background"   Value="{DynamicResource PillOffBackgroundBrush}"/>
+                <Setter Property="BorderBrush"  Value="{DynamicResource PillOffBorderBrush}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsOn,
+                                 RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                 Value="True">
+                        <Setter Property="Background"  Value="{DynamicResource PillOnBackgroundBrush}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource PillOnBorderBrush}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+
+        <TextBlock x:Name="PillText"
+                   FontSize="10"
+                   FontWeight="Bold"
+                   Text="{Binding IsOn,
+                          RelativeSource={RelativeSource AncestorType=UserControl},
+                          Converter={StaticResource PillTextConverter}}">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <!-- Default: OFF state -->
+                    <Setter Property="Foreground" Value="{DynamicResource PillOffForegroundBrush}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsOn,
+                                     RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                     Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource PillOnForegroundBrush}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </Border>
+</UserControl>
