@@ -8,9 +8,8 @@ Documents/AI PM/Upgrade/
 .vs/
 *.csproj.user
 
-# Heavy local archives — stay on disk, too large for git (Releases ~953 MB, Sharable EXE ~170 MB)
+# Heavy local archive — stays on disk, too large for git (~780 MB: v1.0 source + build, v2.0/v3.0 release zips)
 Releases/
-Sharable EXE/
 
 # Windows Explorer thumbnail cache
 Thumbs.db
