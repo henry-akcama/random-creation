@@ -123,15 +123,19 @@ namespace RandomCreation
         public string SerialDisplay => Serial > 0 ? $"#{Serial:N0}" : "";
 
         [System.Text.Json.Serialization.JsonIgnore]
-        public string Summary
+        public string Summary =>
+            Serial > 0 ? $"#{Serial:N0} · {SummaryCore}" : SummaryCore;
+
+        /// <summary>The summary without the serial prefix — for places that
+        /// already show the serial separately, like the print header.</summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public string SummaryCore
         {
             get
             {
-                string serialPart = Serial > 0 ? $"#{Serial:N0} · " : "";
-
                 // Pre-v3.0 entry — no group data, show flat option list
                 if (Result.Count > 0 && Result.All(r => string.IsNullOrEmpty(r.GroupName)))
-                    return serialPart + string.Join(" · ", Result.Select(r => r.Option));
+                    return string.Join(" · ", Result.Select(r => r.Option));
 
                 string collectionPart = (ActiveCollections == null || ActiveCollections.Count == 0)
                     ? "My Collection"
@@ -145,7 +149,7 @@ namespace RandomCreation
 
                 int resultCount = Result.Count;
 
-                return $"{serialPart}{collectionPart} · {groupCount} group{(groupCount == 1 ? "" : "s")} · {resultCount} result{(resultCount == 1 ? "" : "s")}";
+                return $"{collectionPart} · {groupCount} group{(groupCount == 1 ? "" : "s")} · {resultCount} result{(resultCount == 1 ? "" : "s")}";
             }
         }
 

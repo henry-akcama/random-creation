@@ -29,6 +29,23 @@ cleared or limited: if you generate ten thousand, that is your count. Existing
 history entries keep no number — the count starts from your first generation
 on this version.
 
+Printing — real pages
+--------------------------------------------------------------------------------
+Printing no longer silently discards everything past the first page. Results
+now flow across as many pages as they need, cards are kept whole rather than
+split at a page edge, and every page carries a footer — "Random Creation ·
+#1,234 · Page 2 of 3" — so a missing sheet is noticed.
+
+The print preview now shows exactly what will print: real page breaks, footers
+and page numbers, built by the same code that feeds the printer.
+
+The print header is more compact and easier to read: title and serial number
+on one line, timestamp and summary on a second, with the grey text darkened so
+it stays legible on paper.
+
+Dimmed items print again in grouped results, shown faded rather than left out
+— matching how they have always appeared on screen.
+
 Fixes
 --------------------------------------------------------------------------------
 A brand-new install no longer announces that your collections were converted
