@@ -408,13 +408,15 @@ namespace RandomCreation
                 ResultGroupCards.Children.Add(card);
             }
 
-            // Timestamp
+            // Timestamp, with the serial in front when this result has one
             if (DataService.Settings.LastResultTime.HasValue)
             {
                 var dt = DataService.Settings.LastResultTime.Value;
+                long lastSerial = DataService.Settings.LastResultSerial;
+                string serialPart = lastSerial > 0 ? $"#{lastSerial:N0} · " : "";
                 ResultTimestamp.Text = dt.Date == DateTime.Today
-                    ? $"Generated today at {dt:h:mm tt}"
-                    : $"Generated {dt:MMM d} at {dt:h:mm tt}";
+                    ? $"{serialPart}Generated today at {dt:h:mm tt}"
+                    : $"{serialPart}Generated {dt:MMM d} at {dt:h:mm tt}";
                 ResultTimestamp.Visibility = Visibility.Visible;
             }
             else
@@ -668,10 +670,15 @@ namespace RandomCreation
             var enabledCollections = DataService.Categories.Collections
                 .Where(c => c.IsEnabled).ToList();
 
+            // Assign the next serial — once, at generate time, never recomputed
+            DataService.Settings.GenerationCounter++;
+            long serial = DataService.Settings.GenerationCounter;
+
             // Always save the new result to history immediately
             var entry = new HistoryEntry
             {
                 Timestamp            = DateTime.Now,
+                Serial               = serial,
                 Result               = result.ToList(),
                 ActiveCollections    = enabledCollections.Select(c => c.Name).ToList(),
                 EnabledGroupCount    = enabledCollections
@@ -687,8 +694,9 @@ namespace RandomCreation
             DataService.AddHistoryEntry(entry);
 
             // Update last result
-            DataService.Settings.LastResult     = result;
-            DataService.Settings.LastResultTime = DateTime.Now;
+            DataService.Settings.LastResult       = result;
+            DataService.Settings.LastResultTime   = DateTime.Now;
+            DataService.Settings.LastResultSerial = serial;
             DataService.SaveSettings();
 
             _currentResultIsDrawn = false;
@@ -815,6 +823,7 @@ namespace RandomCreation
             var entry = new HistoryEntry
             {
                 Timestamp  = DataService.Settings.LastResultTime ?? DateTime.Now,
+                Serial     = DataService.Settings.LastResultSerial,
                 Result     = result,
                 ActiveCollections = DataService.Categories.Collections
                     .Where(c => c.IsEnabled).Select(c => c.Name).ToList()

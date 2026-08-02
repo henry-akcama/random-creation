@@ -21,6 +21,14 @@ Settings gains an "Open data folder" button that shows the folder holding your
 collections, history, presets and settings — useful for backups, hand-editing,
 or moving your setup to another machine.
 
+Every generation now gets a serial number — #1, #2, and so on, climbing
+forever. It appears with the result on the main screen, in History and in the
+result details, so a printed sheet can always be matched back to the
+generation that produced it. The count never resets, not even when history is
+cleared or limited: if you generate ten thousand, that is your count. Existing
+history entries keep no number — the count starts from your first generation
+on this version.
+
 Fixes
 --------------------------------------------------------------------------------
 A brand-new install no longer announces that your collections were converted

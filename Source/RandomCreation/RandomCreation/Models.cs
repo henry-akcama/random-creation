@@ -100,6 +100,11 @@ namespace RandomCreation
         public DateTime         Timestamp            { get; set; }
         public List<ResultPair> Result               { get; set; } = new();
 
+        // Serial number — v4.0. Assigned once at generate time from the
+        // ever-climbing counter in SettingsData, never recomputed. 0 means
+        // the entry predates serials (no backfill) and nothing is shown.
+        public long Serial { get; set; } = 0;
+
         // Generation context saved at time of generate
         public List<string> ActiveCollections     { get; set; } = new();
         public int          EnabledGroupCount     { get; set; } = 0;   // v3.0
@@ -113,14 +118,20 @@ namespace RandomCreation
 
         /// <summary>Option C format: "My Collection · 3 groups · 17 results"
         /// Falls back to flat option list for pre-v3.0 entries (GroupName == "").</summary>
+        /// <summary>"#1,234" with thousands separators, or "" for pre-serial entries.</summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public string SerialDisplay => Serial > 0 ? $"#{Serial:N0}" : "";
+
         [System.Text.Json.Serialization.JsonIgnore]
         public string Summary
         {
             get
             {
+                string serialPart = Serial > 0 ? $"#{Serial:N0} · " : "";
+
                 // Pre-v3.0 entry — no group data, show flat option list
                 if (Result.Count > 0 && Result.All(r => string.IsNullOrEmpty(r.GroupName)))
-                    return string.Join(" · ", Result.Select(r => r.Option));
+                    return serialPart + string.Join(" · ", Result.Select(r => r.Option));
 
                 string collectionPart = (ActiveCollections == null || ActiveCollections.Count == 0)
                     ? "My Collection"
@@ -134,7 +145,7 @@ namespace RandomCreation
 
                 int resultCount = Result.Count;
 
-                return $"{collectionPart} · {groupCount} group{(groupCount == 1 ? "" : "s")} · {resultCount} result{(resultCount == 1 ? "" : "s")}";
+                return $"{serialPart}{collectionPart} · {groupCount} group{(groupCount == 1 ? "" : "s")} · {resultCount} result{(resultCount == 1 ? "" : "s")}";
             }
         }
 
@@ -277,6 +288,14 @@ namespace RandomCreation
         // Last generated result — stored in settings for main screen restore
         public List<ResultPair> LastResult     { get; set; } = new();
         public DateTime?        LastResultTime { get; set; }
+        public long             LastResultSerial { get; set; } = 0;
+
+        // Generation serial counter — v4.0. Lives here, NOT derived from
+        // history, so it climbs forever regardless of the history limit or a
+        // history clear. Never resets, and no reset is built: paper outlives
+        // the app's history, and a printout marked #47 must never start
+        // pointing at a different generation.
+        public long GenerationCounter { get; set; } = 0;
 
         // Last export destination — restored in SaveFileDialog on next export
         public string? LastExportPath { get; set; } = null;
