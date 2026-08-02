@@ -1,0 +1,114 @@
+# ============================================================================
+# Random Creation — release pipeline
+# ============================================================================
+# Pushing a tag like v4.0 builds BOTH downloads and publishes a GitHub
+# Release holding them:
+#   * RandomCreation-<version>-portable.zip  — unzip anywhere and run;
+#     contains portable.txt, so data lives in data\ beside the exe
+#   * RandomCreation-<version>-setup.exe     — per-user installer, no admin;
+#     portable.txt excluded, so data lives in %LocalAppData%\RandomCreation
+#
+# THE VERSION COMES FROM THE TAG (v4.0 -> 4.0), passed into the build and
+# the installer script, so a forgotten hand-edit can never ship a build
+# labelled wrongly. The one step still done by hand before tagging:
+# finalise the version heading in changelog.txt.
+# ============================================================================
+
+name: Release
+
+# Manual runs (the Actions tab's "Run workflow" button) BUILD everything but
+# publish nothing — they upload the two artifacts to the workflow run for
+# inspection. Only a pushed tag creates a public release.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out the tagged commit
+        uses: actions/checkout@v4
+
+      - name: Derive the version from the tag
+        id: version
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF -like "refs/tags/*") {
+            $v = $env:GITHUB_REF_NAME.TrimStart('v')
+          } else {
+            $v = "0.0.0"   # manual dry run — never released
+          }
+          "version=$v" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Building version $v"
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish (self-contained, single-file, win-x64)
+        shell: pwsh
+        run: |
+          $v = "${{ steps.version.outputs.version }}"
+          dotnet publish "Source/RandomCreation/RandomCreation/RandomCreation.csproj" `
+            -c Release -r win-x64 --self-contained true `
+            -p:PublishSingleFile=true -p:PublishReadyToRun=true `
+            -p:Version=$v -p:AssemblyVersion="$v.0" -p:FileVersion="$v.0" `
+            -o publish
+
+      - name: Zip the portable build
+        shell: pwsh
+        run: |
+          $v = "${{ steps.version.outputs.version }}"
+          # Wrap in a named folder so unzipping never splashes loose files
+          New-Item -ItemType Directory dist | Out-Null
+          Copy-Item publish "Random Creation" -Recurse
+          Compress-Archive -Path "Random Creation" `
+            -DestinationPath "dist/RandomCreation-$v-portable.zip"
+
+      - name: Build the installer (Inno Setup)
+        shell: pwsh
+        run: |
+          $v = "${{ steps.version.outputs.version }}"
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" `
+            /DAppVersion=$v `
+            /DSourceDir="$PWD\publish" `
+            /O"$PWD\dist" `
+            "Source\RandomCreation\Installer\RandomCreation.iss"
+
+      - name: Upload artifacts for inspection (dry run only)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-dry-run
+          path: dist/
+
+      - name: Create the GitHub Release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $v = "${{ steps.version.outputs.version }}"
+          $notes = @"
+          **Two downloads — pick one:**
+
+          * **RandomCreation-$v-setup.exe** — installer. No admin rights needed; your data lives in your Windows user profile, safe across updates and uninstalls.
+          * **RandomCreation-$v-portable.zip** — no installation. Unzip anywhere and run RandomCreation.exe; your data lives in a ``data`` folder beside the app.
+
+          Windows may show a blue "Windows protected your PC" screen because the download is not code-signed. Click **More info**, then **Run anyway**.
+
+          Full release notes are in the app under **Settings → About**, or in [changelog.txt](https://github.com/henry-akcama/random-creation/blob/main/Source/RandomCreation/RandomCreation/changelog.txt).
+          "@
+          gh release create $env:GITHUB_REF_NAME `
+            "dist/RandomCreation-$v-portable.zip" `
+            "dist/RandomCreation-$v-setup.exe" `
+            --title "Random Creation $v" `
+            --notes $notes
