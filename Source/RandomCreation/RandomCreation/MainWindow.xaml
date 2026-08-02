@@ -21,7 +21,8 @@
                       GlassFrameThickness="0"/>
     </WindowChrome.WindowChrome>
 
-    <Border Background="{DynamicResource BackgroundOuterBrush}"
+    <Border x:Name="WindowShellBorder"
+            Background="{DynamicResource BackgroundOuterBrush}"
             BorderBrush="{DynamicResource BorderStandardBrush}"
             BorderThickness="1"
             CornerRadius="8">
@@ -32,7 +33,8 @@
             </Grid.RowDefinitions>
 
             <!-- ══ CUSTOM TITLE BAR ══════════════════════════════════════════ -->
-            <Border Grid.Row="0"
+            <Border x:Name="TitleBarBorder"
+                    Grid.Row="0"
                     Background="{DynamicResource BackgroundTitleBarBrush}"
                     BorderBrush="{DynamicResource BorderStandardBrush}"
                     BorderThickness="0,0,0,1"

@@ -86,6 +86,18 @@ namespace RandomCreation
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
 
+        protected override void OnStateChanged(EventArgs e)
+        {
+            base.OnStateChanged(e);
+
+            // Square the shell off while maximised: rounded corners and the
+            // 1px outline belong to the floating window, not a full work area.
+            bool max = WindowState == WindowState.Maximized;
+            WindowShellBorder.CornerRadius   = max ? new CornerRadius(0) : new CornerRadius(8);
+            WindowShellBorder.BorderThickness = max ? new Thickness(0)   : new Thickness(1);
+            TitleBarBorder.CornerRadius      = max ? new CornerRadius(0) : new CornerRadius(8, 8, 0, 0);
+        }
+
 
         // ── Maximise sizing ──────────────────────────────────────────────────
         // The window is borderless (WindowStyle="None"), which loses the sizing

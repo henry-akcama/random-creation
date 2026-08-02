@@ -14,7 +14,8 @@ Manage Content screen without their background tint in both themes.
 
 A maximised window no longer extends underneath the taskbar. Maximising,
 Win+Up and drag-to-top now stop at the taskbar edge on whichever monitor the
-window is on, wherever the taskbar is docked.
+window is on, wherever the taskbar is docked. The window's rounded corners
+and outline also square off while maximised, matching standard windows.
 
 
 Version 3.0 — June 2026
