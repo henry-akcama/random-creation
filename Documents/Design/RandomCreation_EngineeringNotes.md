@@ -1,4 +1,20 @@
-# Random Creation — Project Context v3.0 Final
+# Random Creation — Engineering Notes
+
+**Version: 1.0 — August 2026.** Authoritative for CODE-LEVEL ENGINEERING KNOWLEDGE: the traps,
+the patterns, and the reasons behind implementation choices that reading the code does not
+reveal. Distinct in kind from `RandomCreation_ProjectContext_v3_0.md`, which is the design
+record — screens, layouts, colour palettes, data models, what the app *is*. This doc is what was
+learned building it.
+
+Renamed from `RandomCreation_ProjectContext_3_0.md` at the v3.3 close-out. The old name differed
+from the design record's by a single underscore and read as a duplicate of it; a comparison
+confirmed the opposite — none of the material below appears in that document. Two sections were
+cut at the same time: a Claude-project-knowledge file-naming scheme that no longer applies, and
+an output-file-locations section that stated `categories.json` belongs in the `data\` folder,
+which contradicts the ruling recorded in `RandomCreation_DevelopmentLifecycle.md` section 7 and
+describes the exact mistake that would destroy a user's content.
+
+---
 
 ## What This App Is
 A WPF/.NET 8 desktop app for generating random combinations. The user organises
@@ -102,34 +118,32 @@ Left-click badge cycles up, right-click cycles down.
 
 ---
 
-## File Naming in Project Knowledge
-Claude project knowledge files use version suffixes for tracking:
-`FileName_3_0.xaml`, `FileName_xaml_3_0.cs`, `FileName_3_0.cs`
-Actual on-disk project files have no suffix.
-`_2_0` files are still accurate for files not modified in v3.0.
-See `RandomCreation_FileIndex_v3_0.md` for a complete file-by-file reference.
-
----
-
 ## Known Issues / Code Quality Notes
 
 ### ManageContentScreen is a god class
 2,400+ lines, 15+ state variables, handles selection, drag, inline edit,
 keyboard, search, clipboard, undo — all in one file. Works correctly but is
-hard to extend. Flagged for v4.0 refactor.
+hard to extend. Flagged for a future refactor.
 
 ### Full-rebuild pattern
 `RefreshGroupsPanel()` rebuilds the entire sidebar on every change. Correct and
 predictable but will feel slow with very large datasets (hundreds of categories).
-Should be replaced with `ObservableCollection` + `INotifyPropertyChanged` in v4.0.
+Should be replaced with `ObservableCollection` + `INotifyPropertyChanged`.
 
 ### Dual selection tracking
 `_selectedOption` (single) and `_selectedOptions` (HashSet) coexist for
-historical reasons. Both must be kept in sync. Consolidate in v4.0.
+historical reasons. Both must be kept in sync. Consolidate when the god class
+is broken up.
 
 ---
 
-## v4.0 Todo List
+## Future Refactor and Feature Candidates
+
+**None of these are in v4.0.** This list was written in the v3.0 era under the heading
+"v4.0 Todo List", when "v4.0" meant "some future major version." The actual v4.0 —
+see `RandomCreation_ReleasePlan_v4_0.md` — contains none of it. Retitled at the v3.3
+close-out so it cannot be read as a promise the release failed to keep.
+
 - **Refactor ManageContentScreen** into proper ViewModels — split selection
   manager, drag handler, inline edit controller, keyboard handler
 - **Replace `RefreshGroupsPanel` full-rebuild** with `ObservableCollection`
@@ -145,19 +159,16 @@ historical reasons. Both must be kept in sync. Consolidate in v4.0.
 ---
 
 ## Migration Paths
+
+**Accurate as of v3.0, and scheduled for removal.** `RandomCreation_ReleasePlan_v4_0.md`
+BUG 2 deletes the v1 and v2 paths outright — no user holds pre-v3.0 data — leaving only
+a fresh start and an unrecognised-data backup. Update this section in the same session
+that lands that change.
+
 - **v1.0 → v3.0:** Old `creature_crafter_data.json` detected → renamed to `.bak`
-  → fresh start → `NoticeDialog` shown
+  → fresh start → `NoticeDialog` shown. *Note: this path is unreachable in shipped
+  v3.0 — see BUG 2 in the release plan.*
 - **v2.0 → v3.0:** `SchemaVersion` absent or 0 → each collection's flat category
   list wrapped into one `CategoryGroup` named after the collection → history and
   presets cleared → backup prompt → `MigrationDialog` shown
 - **Unknown version:** All files backed up as `.bak` → fresh start → `NoticeDialog`
-
----
-
-## Output Files Location
-During development, Claude writes output files to `/mnt/user-data/outputs/`.
-The user copies them into the actual project at:
-`Source/RandomCreation/RandomCreation/`
-Theme files go in the `Themes/` subfolder.
-Data files (`changelog.txt`, `categories.json`) go in the `data/` folder
-next to the built exe.

@@ -1,7 +1,12 @@
 Random Creation — WPF desktop app (C# / .NET 8)
 
-**App:** Random Creation (Windows desktop) · **Current version:** 3.0
+**App:** Random Creation (Windows desktop) · **Current version:** 3.0 · **Next release:** 4.0, planned
 **Original working title:** Creature Crafter (v1.0), renamed in v2.0.
+
+v4.0 is fully planned and not yet started — twelve items plus an installer, an uninstaller, and a
+move of user data out of the program folder. `Documents\Design\RandomCreation_ReleasePlan_v4_0.md`
+is authoritative for what it contains and why; read it before touching code. Note that the app
+version (4.0) and the AI PM project version (3.3) are different numbers on different schedules.
 
 Random Creation generates random combinations from user-defined content. The user
 creates **Collections** (Creatures, Starships, Guns), adds **Category Groups** to each
@@ -71,7 +76,7 @@ safety net at all, so those need an explicit ruling every time.
 - **No NuGet packages.** Serialization is `System.Text.Json`, built into .NET 8. Keep it
   that way — do not add dependencies without asking.
 - Single solution, single project. Visual Studio Community 2022 is installed; the .NET
-  SDK it ships (9.0.307) builds this project from the command line in about seven
+  SDK it ships (9.0.316) builds this project from the command line in about seven
   seconds, so Visual Studio does not need to be open to build or run.
 - Assembly version lives in `RandomCreation.csproj` (`AssemblyVersion` / `FileVersion`),
   currently `3.0.0.0`. The Settings About section reads it from the assembly at runtime —
@@ -237,9 +242,10 @@ judgment, not rigid rules.)
 
 | Doc | Read it for |
 |-----|-------------|
+| `Documents\Design\RandomCreation_ReleasePlan_v4_0.md` | **Read before building.** What v4.0 contains, in what order, and why — every fix approach already decided |
 | `Documents\Design\RandomCreation_ProjectContext_v3_0.md` | **The deep one.** Full v3.0 architecture, every screen's layout, undo/toast/clipboard/drag specs, colour palettes, bug-fix table, deferred list |
 | `Documents\Design\RandomCreation_FileIndex_v3_0.md` | What each source file does and what changed in v3.0 |
-| `Documents\Design\RandomCreation_ProjectContext_3_0.md` | Shorter v3.0 summary |
+| `Documents\Design\RandomCreation_EngineeringNotes.md` | Code-level traps and reasons: WPF DataTrigger gotchas, why `SelectedCategoryBrush` lives in `App.xaml`, weight-tier probability anchors, refactor candidates |
 | `Documents\Design\RandomCreation_ProjectContext_v2.0.md`, `_v1.0.md` | Earlier version design records |
 | `Documents\Design\RandomCreation_DevelopmentLifecycle.md` | **How the project is worked and shipped.** Storage scheme, the build cycle, git/GitHub, licensing, the portable-vs-installed fork, sample content |
 | `Documents\Design\Screen Shots\` | UI screenshots by version (v1.0, v2.0, v3.0) |

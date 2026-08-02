@@ -1,44 +1,44 @@
 Random Creation — Handoff
 
-Project at v3.2. Written at the structure, storage and GitHub close-out, August 1 2026.
+Project at v3.3. Written at the GitHub, Visual Studio and v4.0 planning close-out, August 1 2026.
 
 WHERE THINGS STAND
 
-The scheme is settled and written down. The developer asked to be taught how a project like this
-should be laid out and shipped rather than handed a finished scheme, and that session produced
-Documents\Design\RandomCreation_DevelopmentLifecycle.md — read it before touching storage, build
-or release questions, because it carries the reasoning and not just the conclusions.
+The tooling is finished and the plan is written. GitHub is live and in sync — the commit rewrite
+and first push both ran and were verified. Visual Studio runs the app; F5 was only ever failing
+because the build configuration sat on Release.
 
-docs\ is gone. Its v1.0 and v2.0 source snapshots live at Documents\Archive\ and are the only
-surviving copies of pre-git source; everything else in it was hash-proven redundant first.
-categories.json is homed at Source\...\SampleData\ and ships to samples\, never data\.
-
-The project is on GitHub — repository created, public, all-rights-reserved, connected as origin,
-LICENSE and README written — but NOTHING HAS BEEN PUSHED YET.
-
-The app itself is still untouched: a finished v3.0, assembly 3.0.0.0. No code work has happened
-under AI PM yet beyond one .csproj ItemGroup.
+The app itself is STILL UNCHANGED: a finished v3.0, assembly 3.0.0.0. Not one line of C# has been
+edited under AI PM yet. That ends next session.
 
 NEXT SESSION SHOULD TAKE UP
 
-The push sequence, immediately — backlog item 1, and the developer ruled it happens right after
-this close-out. Order matters: rewrite the 10 pre-adoption commits to the noreply address FIRST
-(git filter-branch; it refuses to run on a dirty tree, and the rewrite is only safe while nothing
-has been pushed), then the first push, which opens a browser once for Credential Manager. Only
-after that do Actions and Pages become possible.
+Building v4.0. Read Documents\Design\RandomCreation_ReleasePlan_v4_0.md FIRST and in full — it is
+authoritative for what the release contains, in what order, and why, and every fix approach was
+already argued out and decided. Do not re-plan it. The build order is in its section 3; start with
+BUG 1 and BUG 3, which are quick, independent, and give the developer something visible early.
 
-If the push already happened, the next topic is Visual Studio setup — backlog item 2, the half of
-the structure session that was not reached.
+The packaging decisions that ride alongside are NOT in the plan doc — they are in
+RandomCreation_DevelopmentLifecycle.md sections 6 and 8, which carry the reasoning.
 
 OPEN ITEMS RIDING THIS HANDOFF
 
-* The developer is new to git and GitHub and is deliberately learning, not delegating. Explain
-  operations plainly AS THEY RUN. They dismissed two option-picker prompts in a row this session
-  and engaged well with plain prose — prefer conversational answers over structured choice lists
-  unless a decision genuinely has discrete branches.
-* Two changes landed outside the project this session, both stated at the time: the global
-  .gitconfig now carries the noreply email for every repo on this machine, and one scratch file
-  was written to the system temp folder rather than the session scratch area.
-* The developer does not read C#. Running the app is their only real review mechanism — protect
-  it. A build server proves code compiles and cannot prove a GUI works; BUG 1 is the standing
-  proof, since it compiles perfectly.
+* THE DEVELOPER DOES NOT READ C#. Running the app is their only real review mechanism. Verify
+  after EACH item rather than batching — they chose "plan it all, then build it all" precisely so
+  that building could go item by item. BUG 1 must be checked with screenshots, never by compiling:
+  compiling cleanly is exactly what shipped that bug.
+* They are new to git and GitHub and are deliberately learning, not delegating. Explain operations
+  plainly AS THEY RUN. This session's pattern worked well — say what a command does, say what is
+  irreversible, verify afterwards and show the evidence.
+* THE "RUN" BUTTON ON CODE BLOCKS DID NOT WORK for them three times running; commands only
+  executed when the AI ran them. Assume it is unreliable and confirm state rather than trusting a
+  reported run.
+* Two questions are deliberately left open for the developer to settle by LOOKING, not by
+  discussion: the dimmed-item opacity on a real proof print (start at 60%), and the final content
+  of the new sample file. Do not resolve either in advance.
+* Ask before building BUG 3 whether anything changed about their taskbar: auto-hide support was
+  deliberately excluded on the grounds that they do not use it.
+* bin\Debug\...\data old\ is a genuine v2.0-era data set and is the test material for BUG 2's
+  unrecognised-data path. Keep it until that fix is verified, then it can go.
+* One scratch file was written to this session's own scratch area; nothing landed outside the
+  project.
