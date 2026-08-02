@@ -103,6 +103,16 @@
     <SolidColorBrush x:Key="SummaryPillOffBackgroundBrush" Color="#2a2a2e"/>
     <SolidColorBrush x:Key="SummaryPillOffForegroundBrush" Color="#444448"/>
 
+    <!-- ── Manage Content — selection and card borders ──────────────────── -->
+    <!-- SelectedCategoryBrush: dark blue tint matching mockup #1e2a3a -->
+    <SolidColorBrush x:Key="SelectedCategoryBrush"  Color="#1e2a3a"/>
+    <!-- GroupCardBorderBrush: visible but subtle card border -->
+    <SolidColorBrush x:Key="GroupCardBorderBrush"   Color="#38383c"/>
+    <!-- GroupCardHeaderBrush: slightly lighter than outer bg so card header is visible -->
+    <SolidColorBrush x:Key="GroupCardHeaderBrush"   Color="#222226"/>
+    <!-- GroupCatSeparatorBrush: separator line inside card -->
+    <SolidColorBrush x:Key="GroupCatSeparatorBrush" Color="#38383c"/>
+
     <!-- ── Delete / destructive ───────────────────────────────────────────── -->
     <SolidColorBrush x:Key="DeleteForegroundBrush"     Color="#e05050"/>
     <SolidColorBrush x:Key="DeleteBackgroundBrush"     Color="#e05050"/>

@@ -3,6 +3,16 @@ Random Creation — Changelog
 ================================================================================
 
 
+Version 4.0 — in development
+================================================================================
+
+Fixes
+--------------------------------------------------------------------------------
+The app now uses the correct v3.0 theme files. Version 3.0 accidentally shipped
+with the older v2.0 theme colours, which left the group card headers on the
+Manage Content screen without their background tint in both themes.
+
+
 Version 3.0 — June 2026
 ================================================================================
 

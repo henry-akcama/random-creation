@@ -103,6 +103,12 @@
     <SolidColorBrush x:Key="SummaryPillOffBackgroundBrush" Color="#e2e8f0"/>
     <SolidColorBrush x:Key="SummaryPillOffForegroundBrush" Color="#9090a0"/>
 
+    <!-- ── Manage Content — selection and card borders ──────────────────── -->
+    <SolidColorBrush x:Key="SelectedCategoryBrush"  Color="#e0eaf8"/>
+    <SolidColorBrush x:Key="GroupCardBorderBrush"   Color="#c8d0dc"/>
+    <SolidColorBrush x:Key="GroupCardHeaderBrush"   Color="#f0f4f8"/>
+    <SolidColorBrush x:Key="GroupCatSeparatorBrush" Color="#dde4ec"/>
+
     <!-- ── Delete / destructive ───────────────────────────────────────────── -->
     <SolidColorBrush x:Key="DeleteForegroundBrush"      Color="#c02020"/>
     <SolidColorBrush x:Key="DeleteBackgroundBrush"      Color="#e05050"/>
