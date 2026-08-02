@@ -1,12 +1,15 @@
 Random Creation — WPF desktop app (C# / .NET 8)
 
-**App:** Random Creation (Windows desktop) · **Current version:** 3.0 · **Next release:** 4.0, planned
+**App:** Random Creation (Windows desktop) · **Current version:** 4.0, released August 2026
 **Original working title:** Creature Crafter (v1.0), renamed in v2.0.
 
-v4.0 is fully planned and not yet started — twelve items plus an installer, an uninstaller, and a
-move of user data out of the program folder. `Documents\Design\RandomCreation_ReleasePlan_v4_0.md`
-is authoritative for what it contains and why; read it before touching code. Note that the app
-version (4.0) and the AI PM project version (3.3) are different numbers on different schedules.
+v4.0 shipped on 2026-08-02 via the tag-driven release pipeline: all twelve planned items, an
+installer, an uninstaller, and the move of user data out of the program folder. Downloads live at
+`https://github.com/henry-akcama/random-creation/releases` (installer + portable zip).
+`Documents\Design\RandomCreation_ReleasePlan_v4_0.md` remains authoritative for what v4.0
+contains and why until its content is absorbed into a v4.0 record doc, at which point it
+retires. Note that the app version (4.0) and the AI PM project version are different numbers
+on different schedules.
 
 Random Creation generates random combinations from user-defined content. The user
 creates **Collections** (Creatures, Starships, Guns), adds **Category Groups** to each
@@ -79,8 +82,9 @@ safety net at all, so those need an explicit ruling every time.
   SDK it ships (9.0.316) builds this project from the command line in about seven
   seconds, so Visual Studio does not need to be open to build or run.
 - Assembly version lives in `RandomCreation.csproj` (`AssemblyVersion` / `FileVersion`),
-  currently `3.0.0.0`. The Settings About section reads it from the assembly at runtime —
-  never hard-code a version string in the UI.
+  currently `4.0.0.0`. The Settings About section reads it from the assembly at runtime —
+  never hard-code a version string in the UI. At release the pipeline overrides it from the
+  git tag, so tag and assembly always agree.
 
 ```
 cd "Source\RandomCreation"
@@ -88,9 +92,13 @@ dotnet build
 dotnet run --project RandomCreation
 ```
 
-Publish profile: `RandomCreation\Properties\PublishProfiles\FolderProfile.pubxml`
-(self-contained win-x64). A published build is ~170 MB uncompressed, ~70 MB zipped,
-because it bundles the whole .NET runtime.
+Releases are built by GitHub Actions (`.github\workflows\release.yml`): pushing a tag like
+`v4.0` publishes a self-contained single-file win-x64 build as both a portable zip (~70 MB)
+and an Inno Setup installer (`Source\RandomCreation\Installer\RandomCreation.iss`), attached
+to a GitHub Release. The Actions "Run workflow" button is a dry run — builds everything,
+publishes nothing. The old local publish profile
+(`RandomCreation\Properties\PublishProfiles\FolderProfile.pubxml`) still exists but points
+at a dead output path; the pipeline is the release mechanism.
 
 ---
 
@@ -138,11 +146,8 @@ are all enabled. Weighted random selection over the enabled options.
   between themes. Both `Themes\DarkTheme.xaml` and `Themes\LightTheme.xaml` must define
   every key. `App.xaml`-level resources outcompete merged dictionaries, which is why
   `ThemeService.ApplyTheme()` explicitly reassigns `SelectedCategoryBrush` after the swap.
-  **Known bug, found August 2026, unfixed:** the app loads themes from `Themes\`, but those
-  two files are byte-identical to the **v2.0** themes. The updated v3.0 themes sit
-  unreferenced at the project root, dated four hours before the v3.0 release was built —
-  so shipped v3.0 runs v2.0 theme dictionaries. It compiles cleanly, which is why it
-  shipped. On the bug list; do not half-fix it in passing.
+  (The v3.0-shipped bug where `Themes\` held v2.0 dictionaries was fixed in v4.0 — BUG 1 in
+  the release plan. Its lasting lesson: theme mistakes compile cleanly, so verify visually.)
 - **Undo: one user gesture = one undo step.** A single click that changes many items
   (Enable All, multi-select paste) reverses as one step. Push to `UndoService` for delete,
   rename, add, drag reorder/move, cut, paste, enable/disable toggle, and weight change.
@@ -168,31 +173,42 @@ are all enabled. Weighted random selection over the enabled options.
 
 ## Data files
 
-Runtime data lives in a `data\` folder next to the exe. Copying that folder moves a user's
-whole setup to another machine.
+**Where user data lives depends on the build** (v4.0): a `portable.txt` marker beside the
+exe (shipped in the portable zip, excluded by the installer) means data lives in `data\`
+beside the exe, and copying that folder moves a user's whole setup; no marker means
+`%LocalAppData%\RandomCreation\`, where installs and uninstalls cannot touch it.
+`DataService.IsPortable` decides once at startup; `DataService.DataFolderPath` is the
+public accessor, and Settings has an "Open data folder" button. The dev build in
+`bin\Debug` carries the marker, so development always runs portable. **Program files**
+(`changelog.txt`, `samples\categories.json`) sit beside the exe, are replaced every
+release, and are never written by the app.
 
 | File | Contents |
 |------|----------|
-| `data\settings.json` | Theme, font size, window geometry, sidebar width, history limit, confirm-on-delete, **`SchemaVersion`** |
-| `data\categories.json` | All collections/groups/categories/options. Intentionally **no version field** — kept clean for hand-editing and AI-assisted editing |
-| `data\history.json` | Generation history with timestamps, dim states, group membership, `IsDrawn` |
-| `data\presets.json` | Named snapshots of enable/disable state down to option level |
-| `data\changelog.txt` | Human-readable changelog, loaded at runtime by the Settings About section, newest at top |
+| `settings.json` | Theme, font size, window geometry, sidebar width, history limit, confirm-on-delete, **`SchemaVersion`**, the ever-climbing **`GenerationCounter`** |
+| `categories.json` | All collections/groups/categories/options. Intentionally **no version field** — kept clean for hand-editing and AI-assisted editing |
+| `history.json` | Generation history with timestamps, serials, dim states, group membership, `IsDrawn` |
+| `presets.json` | Named snapshots of enable/disable state down to option level |
 
-**`SchemaVersion` in `settings.json` is the single source of truth for migration.**
-Absent or `0` means pre-v3.0; `3` means current. `DataService.Initialise()` reads it before
-loading anything else and routes to v2→v3 (wrap flat categories into one group per
-collection, clear history and presets, offer a history backup) or v1→v3 (rename the old
-`creature_crafter_data.json`, start fresh) or unknown→fresh (back up everything with `.bak`).
+**`SchemaVersion` in `settings.json` is the single source of truth for data recognition.**
+`DataService.Initialise()` has exactly three cases (v4.0 removed the v1/v2 migrations —
+nobody held pre-v3.0 data): no data files at all → fresh start, no dialog; `3` → load
+normally; anything else → every file backed up with `.bak`, fresh start, one-time notice.
+Never create the data folder before deciding which case applies — that ordering bug is
+what shipped BUG 2.
 
-**Sample content ships to `samples\`, never `data\`.** The sample lives at
-`Source\RandomCreation\RandomCreation\SampleData\categories.json`, and the `.csproj` copies
-it to `samples\categories.json` beside the exe. It must never target `data\`:
-`changelog.txt` uses exactly that mechanism and *should* be overwritten every release, but
-`categories.json` is the user's entire content, and a release landing one at
-`data\categories.json` would destroy the work of anyone updating over their existing
-folder. (v3.0 did ship a `data\categories.json`, but by accident of the release process —
-there was no mechanism to preserve.)
+**Sample content installs conditionally, and only ever onto nothing.** The sample lives at
+`Source\RandomCreation\RandomCreation\SampleData\categories.json`, ships to `samples\`
+beside the exe, and at startup is copied into the data folder **only when no
+`categories.json` exists there** — so a new user starts with a working example and an
+existing user's content can never be overwritten. The rule was always "never overwrite
+user content," and the conditional copy honours it. The sample is the product's first
+impression: three collections of visibly different kinds (Creature, Starship, Swords),
+only Creature enabled, so it never reads as a monster generator.
+
+**Serial numbers** (v4.0): every generation gets `#N` from `GenerationCounter` in
+settings — stored, never derived from history, never reset (paper outlives the app's
+history). Shown everywhere a result appears, including the print footer.
 
 ---
 
@@ -242,11 +258,11 @@ judgment, not rigid rules.)
 
 | Doc | Read it for |
 |-----|-------------|
-| `Documents\Design\RandomCreation_ReleasePlan_v4_0.md` | **Read before building.** What v4.0 contains, in what order, and why — every fix approach already decided |
+| `Documents\Design\RandomCreation_ReleasePlan_v4_0.md` | What v4.0 contains and why — **shipped 2026-08-02**; retires once absorbed into a v4.0 record doc |
 | `Documents\Design\RandomCreation_ProjectContext_v3_0.md` | **The deep one.** Full v3.0 architecture, every screen's layout, undo/toast/clipboard/drag specs, colour palettes, bug-fix table, deferred list |
 | `Documents\Design\RandomCreation_FileIndex_v3_0.md` | What each source file does and what changed in v3.0 |
 | `Documents\Design\RandomCreation_EngineeringNotes.md` | Code-level traps and reasons: WPF DataTrigger gotchas, why `SelectedCategoryBrush` lives in `App.xaml`, weight-tier probability anchors, refactor candidates |
 | `Documents\Design\RandomCreation_ProjectContext_v2.0.md`, `_v1.0.md` | Earlier version design records |
 | `Documents\Design\RandomCreation_DevelopmentLifecycle.md` | **How the project is worked and shipped.** Storage scheme, the build cycle, git/GitHub, licensing, the portable-vs-installed fork, sample content |
-| `Documents\Design\Screen Shots\` | UI screenshots by version (v1.0, v2.0, v3.0) |
-| `Source\RandomCreation\RandomCreation\changelog.txt` | Released changes, user-facing wording — the live file, copied to `data\` at build |
+| `Documents\Design\Screen Shots\` | UI screenshots by version (v1.0–v4.0); the v4.0 set feeds the README |
+| `Source\RandomCreation\RandomCreation\changelog.txt` | Released changes, user-facing wording — ships beside the exe as a program file (v4.0) |
