@@ -26,6 +26,7 @@ namespace RandomCreation
 
             PreviewKeyDown += MainWindow_KeyDown;
             Loaded += MainWindow_Loaded;
+            SourceInitialized += MainWindow_SourceInitialized;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -84,6 +85,83 @@ namespace RandomCreation
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+
+
+        // ── Maximise sizing ──────────────────────────────────────────────────
+        // The window is borderless (WindowStyle="None"), which loses the sizing
+        // behaviour Windows supplies to ordinary windows: maximising covers the
+        // full monitor, including the taskbar. Answering WM_GETMINMAXINFO with
+        // the work area of the monitor the window is on restores the standard
+        // behaviour — taskbar on any edge, any thickness, any monitor, moved
+        // while running. Auto-hide taskbars are deliberately out of scope
+        // (recorded decision — see the v4.0 release plan, BUG 3).
+
+        private void MainWindow_SourceInitialized(object? sender, EventArgs e)
+        {
+            var handle = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            System.Windows.Interop.HwndSource.FromHwnd(handle)?.AddHook(WindowProc);
+        }
+
+        private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_GETMINMAXINFO = 0x0024;
+            if (msg == WM_GETMINMAXINFO)
+            {
+                var monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+                if (monitor != IntPtr.Zero)
+                {
+                    var info = new MONITORINFO
+                    {
+                        cbSize = System.Runtime.InteropServices.Marshal.SizeOf<MONITORINFO>()
+                    };
+                    if (GetMonitorInfo(monitor, ref info))
+                    {
+                        var mmi = System.Runtime.InteropServices.Marshal.PtrToStructure<MINMAXINFO>(lParam);
+                        // MINMAXINFO positions are relative to the monitor's own origin
+                        mmi.ptMaxPosition.x = info.rcWork.left   - info.rcMonitor.left;
+                        mmi.ptMaxPosition.y = info.rcWork.top    - info.rcMonitor.top;
+                        mmi.ptMaxSize.x     = info.rcWork.right  - info.rcWork.left;
+                        mmi.ptMaxSize.y     = info.rcWork.bottom - info.rcWork.top;
+                        System.Runtime.InteropServices.Marshal.StructureToPtr(mmi, lParam, true);
+                        handled = true;
+                    }
+                }
+            }
+            return IntPtr.Zero;
+        }
+
+        private const int MONITOR_DEFAULTTONEAREST = 2;
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, int flags);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO info);
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct W32POINT { public int x; public int y; }
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct W32RECT { public int left; public int top; public int right; public int bottom; }
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct MINMAXINFO
+        {
+            public W32POINT ptReserved;
+            public W32POINT ptMaxSize;
+            public W32POINT ptMaxPosition;
+            public W32POINT ptMinTrackSize;
+            public W32POINT ptMaxTrackSize;
+        }
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct MONITORINFO
+        {
+            public int cbSize;
+            public W32RECT rcMonitor;
+            public W32RECT rcWork;
+            public int dwFlags;
+        }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {

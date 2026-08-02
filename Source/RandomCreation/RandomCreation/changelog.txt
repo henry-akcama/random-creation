@@ -12,6 +12,10 @@ The app now uses the correct v3.0 theme files. Version 3.0 accidentally shipped
 with the older v2.0 theme colours, which left the group card headers on the
 Manage Content screen without their background tint in both themes.
 
+A maximised window no longer extends underneath the taskbar. Maximising,
+Win+Up and drag-to-top now stop at the taskbar edge on whichever monitor the
+window is on, wherever the taskbar is docked.
+
 
 Version 3.0 — June 2026
 ================================================================================
