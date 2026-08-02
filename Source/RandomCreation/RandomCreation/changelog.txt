@@ -6,8 +6,30 @@ Random Creation — Changelog
 Version 4.0 — in development
 ================================================================================
 
+New
+--------------------------------------------------------------------------------
+Random Creation now comes in two forms: a portable version that keeps your data
+in a "data" folder beside the app (as before), and an installed version that
+keeps it in Windows' per-user app-data area, where installs and updates can
+never touch it.
+
+New users start with sample content instead of an empty shell. On startup, if
+you have no collections file at all, the app copies in its shipped sample. It
+never touches an existing collections file — your content is yours.
+
+Settings gains an "Open data folder" button that shows the folder holding your
+collections, history, presets and settings — useful for backups, hand-editing,
+or moving your setup to another machine.
+
 Fixes
 --------------------------------------------------------------------------------
+A brand-new install no longer announces that your collections were converted
+from an older format — there was nothing to convert. Data from truly older or
+newer versions is now backed up with a .bak extension and reported honestly,
+and the app starts fresh.
+
+The About section's release notes now ship alongside the app itself, so they
+always match the version you are running.
 The app now uses the correct v3.0 theme files. Version 3.0 accidentally shipped
 with the older v2.0 theme colours, which left the group card headers on the
 Manage Content screen without their background tint in both themes.

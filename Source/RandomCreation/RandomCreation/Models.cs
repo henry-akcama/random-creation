@@ -17,9 +17,9 @@ namespace RandomCreation
 
     public enum FontSizeScale { Normal, Large, ExtraLarge }
 
-    /// <summary>Identifies which migration path ran during this session,
-    /// so MainWindow can show the appropriate one-time dialog.</summary>
-    public enum MigrationKind { None, V1ToV3, V2ToV3, UnknownVersion }
+    /// <summary>Set when startup found data files this version cannot read
+    /// (backed up with .bak, fresh start), so MainWindow shows a one-time notice.</summary>
+    public enum MigrationKind { None, UnrecognisedData }
 
 
     // ════════════════════════════════════════════════════════════════════════════

@@ -20,22 +20,32 @@
     <Resource Include="Themes\LightTheme.xaml"/>
   </ItemGroup>
 
-  <!-- ── App icon — copy to output alongside exe ── -->
+  <!-- ── Program files — copied to output alongside the exe ── -->
+  <!-- changelog.txt is a PROGRAM file (authored, shipped, replaced every
+       release) and lands beside the exe, never in the data folder — the
+       data folder belongs to the user and may not even be here (installed
+       builds keep it in %LocalAppData%). portable.txt is the marker that
+       makes a build portable: shipped in the zip, excluded by the
+       installer script. -->
   <ItemGroup>
     <Content Include="icon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="changelog.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>data\changelog.txt</TargetPath>
+    </Content>
+    <Content Include="portable.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <!-- ── Sample content — shipped as an example, NOT as live data ── -->
-  <!-- Deliberately lands in 'samples', never 'data'. A file copied into
+  <!-- Deliberately lands in 'samples', never 'data'. A release that wrote
        data\categories.json would overwrite a user's entire content the
        first time they installed an update over their existing folder.
-       Users copy this into data\ themselves if they want the example. -->
+       The APP copies it into the data folder at startup, and only when no
+       categories.json exists there — a conditional install can never
+       overwrite user content. -->
   <ItemGroup>
     <Content Include="SampleData\categories.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

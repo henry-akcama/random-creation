@@ -8,16 +8,36 @@ using System.Linq;
 namespace RandomCreation
 {
     /// <summary>
-    /// Handles all data persistence for Random Creation v3.0.
-    /// Manages four separate JSON files in a 'data' subfolder next to the exe.
-    /// Handles migration from v1.0 (creature_crafter_data.json) and v2.0 (flat categories).
+    /// Handles all data persistence for Random Creation.
+    /// Manages four separate JSON files in the user data folder.
+    ///
+    /// PROGRAM FILES vs USER DATA (see RandomCreation_DevelopmentLifecycle.md §8):
+    /// program files (exe, changelog.txt, samples\) sit beside the exe and are
+    /// replaced every release; user data (the four JSON files) is written by the
+    /// app and never touched by an installer. Where user data lives depends on
+    /// the build: a portable.txt marker beside the exe (shipped in the portable
+    /// zip, absent from the installer) means data\ beside the exe; no marker
+    /// means %LocalAppData%\RandomCreation\.
     /// </summary>
     public static class DataService
     {
         // ── Paths ────────────────────────────────────────────────────────────
 
         private static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
-        private static readonly string DataDir = Path.Combine(BaseDir, "data");
+
+        /// <summary>True when the portable marker file ships beside the exe.
+        /// Decides where user data lives; initialised once at startup.</summary>
+        public static bool IsPortable { get; } = File.Exists(Path.Combine(BaseDir, "portable.txt"));
+
+        private static readonly string DataDir = IsPortable
+            ? Path.Combine(BaseDir, "data")
+            : Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "RandomCreation");
+
+        /// <summary>The folder holding the user's data files, wherever this build
+        /// keeps it. Used by the Settings screen's "Open data folder" button.</summary>
+        public static string DataFolderPath => DataDir;
 
         private static readonly string SettingsPath       = Path.Combine(DataDir, "settings.json");
         private static readonly string CategoriesPath     = Path.Combine(DataDir, "categories.json");
@@ -26,12 +46,10 @@ namespace RandomCreation
         public static string GetCategoriesFilePath() => CategoriesPath;
         private static readonly string HistoryPath        = Path.Combine(DataDir, "history.json");
         private static readonly string PresetsPath        = Path.Combine(DataDir, "presets.json");
-        private static readonly string ChangelogPath      = Path.Combine(DataDir, "changelog.txt");
-        private static readonly string HistoryBackupPath  = Path.Combine(DataDir, "history_backup.json");
 
-        // v1.0 legacy file path
-        private static readonly string LegacyPath       = Path.Combine(BaseDir, "creature_crafter_data.json");
-        private static readonly string LegacyBackupPath = Path.Combine(BaseDir, "creature_crafter_data.json.bak");
+        // Program files — shipped beside the exe, read-only at runtime
+        private static readonly string ChangelogPath      = Path.Combine(BaseDir, "changelog.txt");
+        private static readonly string SamplePath         = Path.Combine(BaseDir, "samples", "categories.json");
 
         private static readonly JsonSerializerOptions JsonOpts = new()
         {
@@ -49,51 +67,45 @@ namespace RandomCreation
         public static HistoryData    History    { get; private set; } = new();
         public static PresetsData    Presets    { get; private set; } = new();
 
-        /// <summary>Set during Initialise() to identify which migration ran this session,
-        /// so MainWindow can show the appropriate one-time dialog.</summary>
+        /// <summary>Set during Initialise() when the data folder held files this
+        /// version cannot read, so MainWindow can show the one-time notice.</summary>
         public static MigrationKind MigrationKind { get; private set; } = MigrationKind.None;
-
-        /// <summary>The raw history.json text captured before v2→v3 migration clears it,
-        /// so the user can optionally save it as a backup.</summary>
-        public static string? PreMigrationHistoryJson { get; private set; } = null;
 
 
         // ── Initialise ───────────────────────────────────────────────────────
 
         /// <summary>
-        /// Called once on app startup — before any UI is shown.
-        /// 1. Reads SchemaVersion from settings.json to determine migration path.
-        /// 2. Runs the appropriate migration (or none if already v3.0).
-        /// 3. Loads all four JSON files.
+        /// Called once on app startup — before any UI is shown. Three cases:
+        ///   * no data files at all      → fresh start, no dialog
+        ///   * SchemaVersion == 3        → load normally
+        ///   * anything else             → back up every file with .bak,
+        ///                                 start fresh, tell the user
+        /// The catch-all is not optional: without it, an unrecognised
+        /// categories.json would deserialise into the current model as an empty
+        /// structure, look like no content, and be overwritten on the next save.
+        /// A fresh data folder receives the sample content from samples\ so a
+        /// new user starts with a working example instead of an empty shell.
         /// </summary>
         public static void Initialise()
         {
-            EnsureDataDir();
+            bool anyData = File.Exists(SettingsPath) || File.Exists(CategoriesPath)
+                        || File.Exists(HistoryPath)  || File.Exists(PresetsPath);
 
-            int version = ReadSchemaVersion();
+            if (anyData && ReadSchemaVersion() != CurrentSchemaVersion)
+                BackUpUnrecognisedData();
 
-            if (version == CurrentSchemaVersion)
-            {
-                // Already v3.0 — load normally
-                LoadAll();
-                return;
-            }
-
-            if (version == 0)
-            {
-                // Could be v1.0 or v2.0 — distinguish by presence of legacy file
-                if (File.Exists(LegacyPath) && !Directory.Exists(DataDir))
-                    RunV1ToV3Migration();
-                else
-                    RunV2ToV3Migration();
-            }
-            else
-            {
-                // version > 3 or some unknown value — future version or corrupt
-                RunUnknownVersionMigration();
-            }
+            // Fresh (or just-reset) data folder — install the sample content.
+            // Never runs when a categories.json exists: user content is sacred.
+            if (!File.Exists(CategoriesPath))
+                TryInstallSampleContent();
 
             LoadAll();
+
+            // Make sure a fresh install lands a settings.json stamped with the
+            // current SchemaVersion straight away, so the next launch does not
+            // mistake this folder for unrecognised data.
+            if (!File.Exists(SettingsPath))
+                SaveSettings();
         }
 
 
@@ -121,209 +133,45 @@ namespace RandomCreation
         }
 
 
-        // ── Migration: v1.0 → v3.0 ──────────────────────────────────────────
+        // ── Unrecognised data → back up and start fresh ──────────────────────
 
-        /// <summary>Triggered when creature_crafter_data.json exists and no data/ folder exists.
-        /// The old format is incompatible — rename to .bak, start fresh.</summary>
-        private static void RunV1ToV3Migration()
+        /// <summary>Triggered when data files exist but SchemaVersion is not the
+        /// current one — an older version's data, a future version's, or corrupt.
+        /// Every file is moved to a .bak name so nothing is lost, then the app
+        /// starts fresh and MainWindow shows a one-time notice.</summary>
+        private static void BackUpUnrecognisedData()
         {
-            try
+            foreach (var path in new[] { SettingsPath, CategoriesPath, HistoryPath, PresetsPath })
             {
-                EnsureDataDir();
-
-                // Rename legacy file to .bak
+                if (!File.Exists(path)) continue;
                 try
                 {
-                    if (File.Exists(LegacyBackupPath)) File.Delete(LegacyBackupPath);
-                    File.Move(LegacyPath, LegacyBackupPath);
+                    string bakPath = path + ".bak";
+                    if (File.Exists(bakPath)) File.Delete(bakPath);
+                    File.Move(path, bakPath);
                 }
-                catch { /* Rename failed — not fatal */ }
-
-                // Write fresh default data
-                WriteDefaultData();
-
-                MigrationKind = MigrationKind.V1ToV3;
+                catch { /* Best effort — a file that cannot move stays in place */ }
             }
-            catch
-            {
-                // Migration failed — start fresh silently
-                WriteDefaultData();
-            }
+
+            MigrationKind = MigrationKind.UnrecognisedData;
         }
 
 
-        // ── Migration: v2.0 → v3.0 ──────────────────────────────────────────
+        // ── Sample content ───────────────────────────────────────────────────
 
-        /// <summary>Triggered when settings.json exists but SchemaVersion is 0 or absent.
-        /// Wraps each collection's flat Categories list in one CategoryGroup named after
-        /// the collection. Clears history and presets (incompatible with new structure).</summary>
-        private static void RunV2ToV3Migration()
+        /// <summary>Copies the shipped sample into the data folder. Only ever
+        /// called when no categories.json exists — a conditional install can
+        /// never overwrite user content. If the sample is missing, LoadAll
+        /// falls back to an empty default collection.</summary>
+        private static void TryInstallSampleContent()
         {
             try
             {
-                // ── 1. Load existing v2.0 categories ────────────────────────
-                V2CategoriesData? v2cats = null;
-                if (File.Exists(CategoriesPath))
-                {
-                    try { v2cats = JsonSerializer.Deserialize<V2CategoriesData>(File.ReadAllText(CategoriesPath), JsonOpts); }
-                    catch { /* Corrupt — treat as empty */ }
-                }
-
-                // ── 2. Capture history.json text for optional backup ─────────
-                if (File.Exists(HistoryPath))
-                {
-                    try { PreMigrationHistoryJson = File.ReadAllText(HistoryPath); }
-                    catch { /* Not readable — no backup available */ }
-                }
-
-                // ── 3. Load existing settings to preserve user preferences ───
-                SettingsData? oldSettings = null;
-                if (File.Exists(SettingsPath))
-                {
-                    try { oldSettings = JsonSerializer.Deserialize<SettingsData>(File.ReadAllText(SettingsPath), JsonOpts); }
-                    catch { /* Corrupt — use defaults */ }
-                }
-
-                // ── 4. Build v3.0 CategoriesData ────────────────────────────
-                var newCats = new CategoriesData();
-
-                foreach (var v2col in v2cats?.Collections ?? new List<V2Collection>())
-                {
-                    var col = new Collection
-                    {
-                        Name      = v2col.Name,
-                        IsEnabled = v2col.IsEnabled
-                    };
-
-                    // One group per collection, named after the collection
-                    var group = new CategoryGroup
-                    {
-                        Name      = v2col.Name,
-                        IsEnabled = true
-                    };
-
-                    foreach (var v2cat in v2col.Categories ?? new List<V2Category>())
-                    {
-                        var cat = new Category
-                        {
-                            Name      = v2cat.Name,
-                            IsEnabled = v2cat.IsEnabled
-                        };
-                        foreach (var v2opt in v2cat.Options ?? new List<V2Option>())
-                        {
-                            cat.Options.Add(new Option
-                            {
-                                Name      = v2opt.Name,
-                                Weight    = v2opt.Weight,
-                                IsEnabled = v2opt.IsEnabled
-                            });
-                        }
-                        group.Categories.Add(cat);
-                    }
-
-                    col.Groups.Add(group);
-                    newCats.Collections.Add(col);
-                }
-
-                // First launch with no data — add default collection
-                if (newCats.Collections.Count == 0)
-                    newCats.Collections.Add(new Collection { Name = "My Collection", IsEnabled = true });
-
-                Categories = newCats;
-                Write(CategoriesPath, Categories);
-
-                // ── 5. Clear history and presets ────────────────────────────
-                History = new HistoryData();
-                Write(HistoryPath, History);
-
-                Presets = new PresetsData();
-                Write(PresetsPath, Presets);
-
-                // ── 6. Write updated settings with SchemaVersion = 3 ────────
-                Settings = oldSettings ?? new SettingsData();
-                Settings.SchemaVersion  = CurrentSchemaVersion;
-                Settings.LastResult     = new List<ResultPair>();
-                Settings.LastResultTime = null;
-                Write(SettingsPath, Settings);
-
-                MigrationKind = MigrationKind.V2ToV3;
-            }
-            catch
-            {
-                // Migration failed — start fresh
-                WriteDefaultData();
-                MigrationKind = MigrationKind.V2ToV3;
-            }
-        }
-
-
-        // ── Migration: unknown version → fresh start ─────────────────────────
-
-        /// <summary>Triggered when SchemaVersion > 3 (future version) or unrecognised.
-        /// Backs up all data files with .bak suffix, starts fresh.</summary>
-        private static void RunUnknownVersionMigration()
-        {
-            try
-            {
-                foreach (var path in new[] { SettingsPath, CategoriesPath, HistoryPath, PresetsPath })
-                {
-                    if (File.Exists(path))
-                    {
-                        try
-                        {
-                            string bakPath = path + ".bak";
-                            if (File.Exists(bakPath)) File.Delete(bakPath);
-                            File.Copy(path, bakPath);
-                        }
-                        catch { /* Best effort */ }
-                    }
-                }
-            }
-            catch { /* Best effort */ }
-
-            WriteDefaultData();
-            MigrationKind = MigrationKind.UnknownVersion;
-        }
-
-
-        // ── History backup helper ─────────────────────────────────────────────
-
-        /// <summary>Saves the pre-migration history.json text to data/history_backup.json.
-        /// Called by MainWindow when the user clicks "Save Backup" in the migration dialog.</summary>
-        public static bool SaveHistoryBackup()
-        {
-            if (string.IsNullOrEmpty(PreMigrationHistoryJson)) return false;
-            try
-            {
+                if (!File.Exists(SamplePath)) return;
                 EnsureDataDir();
-                File.WriteAllText(HistoryBackupPath, PreMigrationHistoryJson);
-                return true;
+                File.Copy(SamplePath, CategoriesPath);
             }
-            catch
-            {
-                return false;
-            }
-        }
-
-
-        // ── Default data ─────────────────────────────────────────────────────
-
-        private static void WriteDefaultData()
-        {
-            EnsureDataDir();
-
-            Settings = new SettingsData { SchemaVersion = CurrentSchemaVersion };
-            Write(SettingsPath, Settings);
-
-            Categories = new CategoriesData();
-            Categories.Collections.Add(new Collection { Name = "My Collection", IsEnabled = true });
-            Write(CategoriesPath, Categories);
-
-            History = new HistoryData();
-            Write(HistoryPath, History);
-
-            Presets = new PresetsData();
-            Write(PresetsPath, Presets);
+            catch { /* Best effort — LoadAll provides the default */ }
         }
 
 
@@ -546,159 +394,26 @@ namespace RandomCreation
         // ── Changelog ────────────────────────────────────────────────────────
 
         private const string FallbackChangelog =
-            "Version 3.0 — 2026\n" +
-            "See changelog.txt in the data folder for full release notes.\n\n" +
-            "Version 2.0 — May 2026\n" +
-            "See changelog.txt for previous release notes.";
+            "Random Creation\n" +
+            "The changelog.txt shipped with the app could not be read.\n" +
+            "Release notes for every version are published at\n" +
+            "https://github.com/henry-akcama/random-creation";
 
         /// <summary>
-        /// Reads changelog.txt from the data folder.
-        /// Creates the file with default content on first run if missing.
-        /// Falls back to a minimal hardcoded string if the file can't be read.
+        /// Reads changelog.txt from beside the exe. It is a program file —
+        /// authored, shipped and replaced with every release — so the app never
+        /// writes it. Falls back to a minimal string if it cannot be read.
         /// </summary>
         public static string ReadChangelog()
         {
-            EnsureDataDir();
-
-            if (!File.Exists(ChangelogPath))
+            try
             {
-                try { File.WriteAllText(ChangelogPath, DefaultChangelogContent); }
-                catch { /* If we can't write, just return fallback */ }
+                if (File.Exists(ChangelogPath))
+                    return File.ReadAllText(ChangelogPath);
             }
+            catch { /* Fall through to the fallback */ }
 
-            try   { return File.ReadAllText(ChangelogPath); }
-            catch { return FallbackChangelog; }
+            return FallbackChangelog;
         }
-
-        private const string DefaultChangelogContent =
-@"================================================================================
-Random Creation — Changelog
-================================================================================
-
-
-Version 3.0 — 2026
-================================================================================
-
-Category Groups
---------------------------------------------------------------------------------
-Added Category Groups as a new organizational layer between Collections and
-Categories. Each collection can contain multiple groups (e.g. HEAD, BODY, LIMBS),
-and each group contains categories. Groups can be enabled or disabled independently.
-Existing categories from v2.0 are automatically migrated into a single group named
-after their collection.
-
-Result Display
---------------------------------------------------------------------------------
-Results are now displayed as grouped cards — one card per group showing all
-category/option pairs for that group. Cards have a fixed width of 240px and scroll
-horizontally within the result area.
-
-History
---------------------------------------------------------------------------------
-History rows now show a summary in the format 'Collection · N groups · N results'.
-A drawn filter lets you hide or show entries marked as drawn. Entries can be marked
-as drawn directly from the history list.
-
-And more
---------------------------------------------------------------------------------
-See the project documentation for the full list of v3.0 changes.
-
-
-================================================================================
-
-
-Version 2.0 — May 2026
-================================================================================
-
-Collections, Presets, Themes, Drag and drop rebuild, and much more.
-See previous changelog for full details.
-
-
-================================================================================
-
-
-Version 1.0 — Early 2026
-================================================================================
-
-Initial release. Categories, options, weighted randomization, history.
-";
-    }
-
-
-    // ════════════════════════════════════════════════════════════════════════════
-    // V2.0 LEGACY MODELS — used only during v2.0 → v3.0 migration
-    // ════════════════════════════════════════════════════════════════════════════
-
-    // These mirror the v2.0 CategoriesData structure (flat: Collection → Category → Option)
-    // and are used only during migration to deserialize the old categories.json.
-
-    internal class V2Option
-    {
-        public string     Name      { get; set; } = "";
-        public WeightTier Weight    { get; set; } = WeightTier.Normal;
-        public bool       IsEnabled { get; set; } = true;
-    }
-
-    internal class V2Category
-    {
-        public string          Name      { get; set; } = "";
-        public bool            IsEnabled { get; set; } = true;
-        public List<V2Option>  Options   { get; set; } = new();
-    }
-
-    internal class V2Collection
-    {
-        public string           Name       { get; set; } = "";
-        public bool             IsEnabled  { get; set; } = true;
-        public List<V2Category> Categories { get; set; } = new();
-    }
-
-    internal class V2CategoriesData
-    {
-        public List<V2Collection> Collections { get; set; } = new();
-    }
-
-
-    // ════════════════════════════════════════════════════════════════════════════
-    // V1.0 LEGACY MODELS — kept for reference, v1→v3 starts fresh (no data migration)
-    // ════════════════════════════════════════════════════════════════════════════
-
-    /// <summary>Mirrors the v1.0 AppData structure — kept for reference only.
-    /// v1.0 → v3.0 migration starts fresh rather than attempting data conversion.</summary>
-    internal class LegacyAppData
-    {
-        public List<LegacyCategory>     Categories    { get; set; } = new();
-        public List<LegacyResultPair>   LastResult    { get; set; } = new();
-        public DateTime?                LastResultTime { get; set; }
-        public List<LegacyHistoryEntry> History       { get; set; } = new();
-        public double WindowWidth                      { get; set; } = 1050;
-        public double WindowHeight                     { get; set; } = 700;
-        public double WindowLeft                       { get; set; } = -1;
-        public double WindowTop                        { get; set; } = -1;
-    }
-
-    internal class LegacyCategory
-    {
-        public string             Name      { get; set; } = "";
-        public bool               IsEnabled { get; set; } = true;
-        public List<LegacyOption> Options   { get; set; } = new();
-    }
-
-    internal class LegacyOption
-    {
-        public string     Name   { get; set; } = "";
-        public WeightTier Weight { get; set; } = WeightTier.Normal;
-    }
-
-    internal class LegacyResultPair
-    {
-        public string Category { get; set; } = "";
-        public string Option   { get; set; } = "";
-    }
-
-    internal class LegacyHistoryEntry
-    {
-        public DateTime             Timestamp { get; set; }
-        public List<LegacyResultPair> Result  { get; set; } = new();
     }
 }

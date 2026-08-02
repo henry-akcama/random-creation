@@ -399,6 +399,44 @@
                     </Button>
                 </Grid>
 
+                <Grid Margin="0,0,0,24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Open data folder"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   FontSize="13"/>
+                        <TextBlock Text="Show the folder holding your collections, history, presets and settings"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   FontSize="11" Margin="0,2,0,0"/>
+                    </StackPanel>
+                    <Button Click="OpenDataFolderButton_Click"
+                            Grid.Column="1"
+                            Cursor="Hand" VerticalAlignment="Center">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Bd"
+                                        Background="{DynamicResource ButtonDarkBrush}"
+                                        BorderBrush="{DynamicResource BorderStandardBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6" Padding="12,6">
+                                    <TextBlock Text="Open"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                               FontSize="12"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background"
+                                                Value="{DynamicResource ButtonDarkHoverBrush}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+
                 <!-- ══ KEYBOARD SHORTCUTS ════════════════════════════════════ -->
                 <TextBlock Text="KEYBOARD SHORTCUTS"
                            Foreground="{DynamicResource TextSectionLabelBrush}"

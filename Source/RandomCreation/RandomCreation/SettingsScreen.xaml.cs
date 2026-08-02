@@ -266,6 +266,29 @@ namespace RandomCreation
             }
         }
 
+        private void OpenDataFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // The folder always exists by now — Initialise() creates it —
+                // but guard anyway so the button can never throw.
+                if (!System.IO.Directory.Exists(DataService.DataFolderPath))
+                    System.IO.Directory.CreateDirectory(DataService.DataFolderPath);
+
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName        = DataService.DataFolderPath,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                new NoticeDialog("Could Not Open Folder",
+                    $"Could not open the data folder: {ex.Message}")
+                { Owner = Main }.ShowDialog();
+            }
+        }
+
         // ── Back ─────────────────────────────────────────────────────────────
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

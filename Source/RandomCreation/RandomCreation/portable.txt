@@ -1,0 +1,11 @@
+This file marks a PORTABLE copy of Random Creation.
+
+While this file sits beside RandomCreation.exe, the app keeps your data in
+the "data" folder in this same directory — copy the whole folder and your
+setup moves with it.
+
+The installed version does not have this file; it keeps data in
+%LocalAppData%\RandomCreation instead, where installs and uninstalls
+cannot touch it.
+
+Deleting this file makes a portable copy behave like an installed one.

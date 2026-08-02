@@ -37,27 +37,14 @@ namespace RandomCreation
             ApplyFontScale();
             UpdateThemeToggleIcon();
 
-            switch (DataService.MigrationKind)
+            if (DataService.MigrationKind == MigrationKind.UnrecognisedData)
             {
-                case MigrationKind.V2ToV3:
-                    new MigrationDialog { Owner = this }.ShowDialog();
-                    break;
-                case MigrationKind.V1ToV3:
-                    new NoticeDialog(
-                        "Data Not Compatible",
-                        "Your existing save file (creature_crafter_data.json) is not compatible " +
-                        "with Random Creation v3.0 and has been saved as creature_crafter_data.json.bak. " +
-                        "The app has started fresh.")
-                    { Owner = this }.ShowDialog();
-                    break;
-                case MigrationKind.UnknownVersion:
-                    new NoticeDialog(
-                        "Unrecognised Data Format",
-                        "The data files were created by a newer version of Random Creation and could " +
-                        "not be loaded. Backups have been saved with a .bak extension and the app has " +
-                        "started fresh.")
-                    { Owner = this }.ShowDialog();
-                    break;
+                new NoticeDialog(
+                    "Unrecognised Data Format",
+                    "The existing data files were created by a different version of Random Creation " +
+                    "and could not be loaded. They have been backed up with a .bak extension in the " +
+                    "data folder, and the app has started fresh.")
+                { Owner = this }.ShowDialog();
             }
 
             bool hasContent = DataService.Categories.Collections

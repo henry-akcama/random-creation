@@ -158,17 +158,28 @@ close-out so it cannot be read as a promise the release failed to keep.
 
 ---
 
-## Migration Paths
+## Startup Data Paths
 
-**Accurate as of v3.0, and scheduled for removal.** `RandomCreation_ReleasePlan_v4_0.md`
-BUG 2 deletes the v1 and v2 paths outright — no user holds pre-v3.0 data — leaving only
-a fresh start and an unrecognised-data backup. Update this section in the same session
-that lands that change.
+**Rewritten for v4.0** (release plan BUG 2 — the v1/v2 migration paths, `MigrationDialog`
+and the `V2*`/`Legacy*` model classes were deleted outright; no user held pre-v3.0 data).
+`DataService.Initialise()` now has exactly three cases:
 
-- **v1.0 → v3.0:** Old `creature_crafter_data.json` detected → renamed to `.bak`
-  → fresh start → `NoticeDialog` shown. *Note: this path is unreachable in shipped
-  v3.0 — see BUG 2 in the release plan.*
-- **v2.0 → v3.0:** `SchemaVersion` absent or 0 → each collection's flat category
-  list wrapped into one `CategoryGroup` named after the collection → history and
-  presets cleared → backup prompt → `MigrationDialog` shown
-- **Unknown version:** All files backed up as `.bak` → fresh start → `NoticeDialog`
+- **No data files at all:** fresh start, no dialog. The shipped sample is copied from
+  `samples\categories.json` into the data folder (CHANGE 5) — only ever when no
+  `categories.json` exists, so it can never overwrite user content.
+- **`SchemaVersion` == 3:** load normally.
+- **Anything else** (older, newer, or corrupt data): every existing data file is MOVED
+  to a `.bak` name → fresh start (sample installs, since the folder is now empty) →
+  `NoticeDialog` shown. This catch-all is what stands between "no migration code" and
+  silent data loss: an old-format `categories.json` would deserialise into the current
+  model as an empty structure and be overwritten on the next save.
+
+The old bug to not reintroduce: never create the data folder before deciding which case
+applies — shipped v3.0 called `EnsureDataDir()` first, which made the "fresh install"
+test (`!Directory.Exists(DataDir)`) unpassable and routed every new user into the v2→v3
+message.
+
+**Where data lives (v4.0):** `DataService.IsPortable` — a `portable.txt` marker beside
+the exe (shipped in the portable zip, excluded by the installer) — decides between
+`data\` beside the exe and `%LocalAppData%\RandomCreation\`. `changelog.txt` and
+`samples\` are PROGRAM files beside the exe; the app reads them and never writes them.
