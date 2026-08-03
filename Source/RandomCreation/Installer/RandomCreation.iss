@@ -32,9 +32,9 @@
 AppId={{7C31A9E4-52D8-4B6F-9A0D-3E8F41C6B7D2}
 AppName=Random Creation
 AppVersion={#AppVersion}
-AppPublisher=henry-akcama
-AppPublisherURL=https://github.com/henry-akcama/random-creation
-AppSupportURL=https://github.com/henry-akcama/random-creation
+AppPublisher=akcama
+AppPublisherURL=https://github.com/akcama/random-creation
+AppSupportURL=https://github.com/akcama/random-creation
 DefaultDirName={localappdata}\Programs\Random Creation
 DisableDirPage=no
 DisableProgramGroupPage=yes

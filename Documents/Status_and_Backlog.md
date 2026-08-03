@@ -8,7 +8,7 @@ v4.0 SHIPPED. All twelve planned items built and verified in the running app, th
 portable zip both published by the tag-driven GitHub Actions pipeline, and the developer
 personally tested the installer, the portable build, the uninstaller's keep-content default, and
 a real multi-page proof print before the tag was pushed. Release:
-https://github.com/henry-akcama/random-creation/releases/tag/v4.0. Assembly 4.0.0.0. The two
+https://github.com/akcama/random-creation/releases/tag/v4.0. Assembly 4.0.0.0. The two
 print open questions (60% dimmed opacity, darkened header grey) were settled by looking at
 paper, as planned. One session took the app from untouched v3.0 to released v4.0.
 

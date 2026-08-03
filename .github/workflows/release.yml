@@ -105,7 +105,7 @@ jobs:
 
           Windows may show a blue "Windows protected your PC" screen because the download is not code-signed. Click **More info**, then **Run anyway**.
 
-          Full release notes are in the app under **Settings → About**, or in [changelog.txt](https://github.com/henry-akcama/random-creation/blob/main/Source/RandomCreation/RandomCreation/changelog.txt).
+          Full release notes are in the app under **Settings → About**, or in [changelog.txt](https://github.com/akcama/random-creation/blob/main/Source/RandomCreation/RandomCreation/changelog.txt).
           "@
           gh release create $env:GITHUB_REF_NAME `
             "dist/RandomCreation-$v-portable.zip" `

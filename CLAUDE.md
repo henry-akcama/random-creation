@@ -5,7 +5,7 @@ Random Creation — WPF desktop app (C# / .NET 8)
 
 v4.0 shipped on 2026-08-02 via the tag-driven release pipeline: all twelve planned items, an
 installer, an uninstaller, and the move of user data out of the program folder. Downloads live at
-`https://github.com/henry-akcama/random-creation/releases` (installer + portable zip).
+`https://github.com/akcama/random-creation/releases` (installer + portable zip).
 `Documents\Design\RandomCreation_ReleasePlan_v4_0.md` remains authoritative for what v4.0
 contains and why until its content is absorbed into a v4.0 record doc, at which point it
 retires. Note that the app version (4.0) and the AI PM project version are different numbers
@@ -59,8 +59,9 @@ they run. `.gitignore` excludes build output (`bin\`, `obj\`, `.vs\`), the `Rele
 archive, `Thumbs.db`, and `*.csproj.user`; those stay on disk but out of the repository.
 Everything else — live source and `Documents\` — is tracked.
 
-**GitHub** (set up August 2026): `https://github.com/henry-akcama/random-creation`, remote
-name `origin`. **Public, but not open source** — the root `LICENSE` is all-rights-reserved,
+**GitHub** (set up August 2026, moved to the `akcama` organization 2026-08-03):
+`https://github.com/akcama/random-creation`, remote name `origin`. GitHub redirects the
+old `henry-akcama/random-creation` address automatically. **Public, but not open source** — the root `LICENSE` is all-rights-reserved,
 and `README.md` declines code contributions, which is what keeps a future sale possible.
 Commits use the noreply identity `311688069+henry-akcama@users.noreply.github.com`, set
 globally on this machine so the real address never reaches a public repo. Push early and

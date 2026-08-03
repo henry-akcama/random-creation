@@ -109,7 +109,7 @@ compiles perfectly. Protect the developer's ability to click through a running b
 4. GITHUB
 --------------------------------------------------------------------------------
 
-Set up at the v3.2 close-out session. Repository: https://github.com/henry-akcama/random-creation
+Set up at the v3.2 close-out session. Repository: https://github.com/akcama/random-creation
 
 VISIBILITY: public. Chosen because GitHub Actions and GitHub Pages are both free for public
 repositories, and because release downloads from a PRIVATE repository are not publicly

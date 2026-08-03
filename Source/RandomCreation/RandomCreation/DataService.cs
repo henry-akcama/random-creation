@@ -397,7 +397,7 @@ namespace RandomCreation
             "Random Creation\n" +
             "The changelog.txt shipped with the app could not be read.\n" +
             "Release notes for every version are published at\n" +
-            "https://github.com/henry-akcama/random-creation";
+            "https://github.com/akcama/random-creation";
 
         /// <summary>
         /// Reads changelog.txt from beside the exe. It is a program file —

@@ -8,7 +8,7 @@ v4.0 IS RELEASED. One session took the app from untouched v3.0 to published v4.0
 plan items built and verified item-by-item in the running app, the installer and portable zip
 published by the new tag-driven pipeline, and the developer personally verified the installer,
 portable build, uninstaller and a real multi-page proof print before the tag went out.
-Release: https://github.com/henry-akcama/random-creation/releases/tag/v4.0
+Release: https://github.com/akcama/random-creation/releases/tag/v4.0
 
 The release plan doc was followed with zero re-planning; its fix approaches all held. The two
 deliberately-open questions (dimmed-print opacity, sample content) were settled by the
