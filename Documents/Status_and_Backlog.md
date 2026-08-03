@@ -2,7 +2,11 @@ Random Creation — Status and Backlog
 
 Current status + what's next. Rewritten at every close-out; completed work leaves for the changelog.
 
-CURRENT STATUS (August 2 2026, v3.4)
+CURRENT STATUS (August 3 2026, v3.5)
+
+REPOSITORY MOVED: GitHub home is now the akcama organization —
+https://github.com/akcama/random-creation — remote updated, references swept (commit 36b489d),
+old address redirects.
 
 v4.0 SHIPPED. All twelve planned items built and verified in the running app, the installer and
 portable zip both published by the tag-driven GitHub Actions pipeline, and the developer
