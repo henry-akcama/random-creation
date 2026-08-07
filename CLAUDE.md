@@ -27,7 +27,7 @@ This project runs on AI Project Manager (AI PM).
 All paths below are relative to this project's folder.
 Session start: read Documents\AI PM\AI_PM_Instructions.md in full and
 follow it.
-Close-out (\closeout, \closeout-auto — these commands only): read
+Close-out (/closeout, /closeout-auto — these commands only): read
 Documents\AI PM\Closeout_Procedure.md in full and follow it.
 --- end AI PM block ---
 
