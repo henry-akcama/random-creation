@@ -1,6 +1,6 @@
 Random Creation — Release Plan v4.0
 
-Version: 1.0 — August 2026. Authoritative for WHAT v4.0 CONTAINS, IN WHAT ORDER, AND WHY.
+Authoritative for WHAT v4.0 CONTAINS, IN WHAT ORDER, AND WHY.
 Not authoritative for the app's existing design (RandomCreation_ProjectContext_v3_0.md), for
 code-level engineering knowledge (RandomCreation_EngineeringNotes.md), or for how the project
 is worked and shipped (RandomCreation_DevelopmentLifecycle.md) — the packaging decisions this

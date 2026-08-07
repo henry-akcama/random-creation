@@ -1,6 +1,6 @@
 Random Creation — Development Lifecycle
 
-Version: 1.1 — August 2026. Authoritative for HOW THIS PROJECT IS WORKED AND SHIPPED: what
+Authoritative for HOW THIS PROJECT IS WORKED AND SHIPPED: what
 is stored where and why, how a session becomes a commit, how a commit becomes a release,
 and where git, GitHub and Visual Studio fit. It is not authoritative for the app's design
 (that is RandomCreation_ProjectContext_v3_0.md), for code-level engineering knowledge (that
@@ -104,6 +104,11 @@ THE DEVELOPER IS THE REVIEW MECHANISM. They do not read C#, so running the app i
 only real way to verify a change. A build server proves code compiles; it cannot prove a
 GUI works. The standing proof is BUG 1 — shipped v3.0 loads v2.0 theme dictionaries and
 compiles perfectly. Protect the developer's ability to click through a running build.
+
+WHEN THE AI DRIVES THE APP ITSELF (UI automation — sending clicks and keystrokes): ask the
+developer for hands-off first. Input sent while they are actively using the machine can
+silently land in their windows instead of the app's. (Routed here from the v3.5 handoff at
+the AI PM 4.0 upgrade.)
 
 --------------------------------------------------------------------------------
 4. GITHUB

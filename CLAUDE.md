@@ -8,8 +8,7 @@ installer, an uninstaller, and the move of user data out of the program folder. 
 `https://github.com/akcama/random-creation/releases` (installer + portable zip).
 `Documents\Design\RandomCreation_ReleasePlan_v4_0.md` remains authoritative for what v4.0
 contains and why until its content is absorbed into a v4.0 record doc, at which point it
-retires. Note that the app version (4.0) and the AI PM project version are different numbers
-on different schedules.
+retires.
 
 Random Creation generates random combinations from user-defined content. The user
 creates **Collections** (Creatures, Starships, Guns), adds **Category Groups** to each
@@ -28,8 +27,8 @@ This project runs on AI Project Manager (AI PM).
 All paths below are relative to this project's folder.
 Session start: read Documents\AI PM\AI_PM_Instructions.md in full and
 follow it.
-Close-out (/closeout, /closeout-light, /closeout-auto — these commands
-only): read Documents\AI PM\AI_Project_Manager.md in full and follow it.
+Close-out (\closeout, \closeout-auto — these commands only): read
+Documents\AI PM\Closeout_Procedure.md in full and follow it.
 --- end AI PM block ---
 
 ---
@@ -210,35 +209,6 @@ only Creature enabled, so it never reads as a monster generator.
 **Serial numbers** (v4.0): every generation gets `#N` from `GenerationCounter` in
 settings — stored, never derived from history, never reset (paper outlives the app's
 history). Shown everywhere a result appears, including the print footer.
-
----
-
-## How we work together
-
-(Ported July 2026 from the developer's IFQ Tracker project; preferences to apply with
-judgment, not rigid rules.)
-
-- **Working pace.** When the developer gives a short reply like "do what you think is
-  best next," "sounds good," or "go ahead," read it as trust in Claude's judgment about
-  the next action — NOT as a signal to go faster, skip confirmation, or stop asking. The
-  developer sets the pace, and asking is always welcome. If a real decision or fork
-  arises (a scope choice, a design tradeoff, or anything Claude itself flagged as an open
-  question), Claude raises it even right after being told to proceed, rather than
-  resolving it silently to save a turn. Prefer plain language over project shorthand when
-  introducing a step the developer may not have seen named before, and state milestones
-  plainly when they are reached.
-- **Information pacing.** A full picture up front is welcome when it helps the developer
-  see the shape of something — the map before the walk. But work through that picture in
-  digestible chunks, one piece at a time, confirming before moving on, rather than
-  presenting a wall of detail to act on all at once. Coupled points get decided together;
-  independent points get worked one at a time. When in doubt, the developer prefers
-  smaller chunks while working, even if the overview was large.
-- **Recorded decisions vs. better ideas.** Locked/recorded rulings are CURRENT DECISIONS
-  with provenance, not laws — their job is to prevent accidental drift and silent
-  re-litigation, never to suppress improvement. If Claude has an idea that a recorded
-  ruling seems to forbid, the idea wins the airtime: surface it, name the ruling it
-  challenges, and let the developer decide. Frame rulings as "current decision" rather
-  than "hard rule" in prose.
 
 ---
 

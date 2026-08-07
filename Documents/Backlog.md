@@ -1,35 +1,21 @@
-Random Creation — Status and Backlog
+Random Creation — Backlog
 
-Current status + what's next. Rewritten at every close-out; completed work leaves for the changelog.
-
-CURRENT STATUS (August 3 2026, v3.5)
-
-REPOSITORY MOVED: GitHub home is now the akcama organization —
-https://github.com/akcama/random-creation — remote updated, references swept (commit 36b489d),
-old address redirects.
-
-v4.0 SHIPPED. All twelve planned items built and verified in the running app, the installer and
-portable zip both published by the tag-driven GitHub Actions pipeline, and the developer
-personally tested the installer, the portable build, the uninstaller's keep-content default, and
-a real multi-page proof print before the tag was pushed. Release:
-https://github.com/akcama/random-creation/releases/tag/v4.0. Assembly 4.0.0.0. The two
-print open questions (60% dimmed opacity, darkened header grey) were settled by looking at
-paper, as planned. One session took the app from untouched v3.0 to released v4.0.
-
-Live code is Source\RandomCreation\ ONLY.
+Forward-looking items only, in intended order. Done work lives in the changelog; there is no
+stored status — summaries are generated from the changelog on request.
 
 WHAT'S NEXT (in intended order)
 
 1. DOWNLOAD-BACK VERIFICATION. Download the published v4.0 assets from GitHub and confirm they
    run — the lifecycle doc's precondition for retiring the local Releases\ folder. The
    developer tested the DRY-RUN artifacts thoroughly; the published files are a fresh build of
-   the same commit and still deserve the direct check.
+   the same commit and still deserve the direct check. The release download URLs now go through
+   the akcama redirect, so verification doubles as a check that redirected downloads work.
 
 2. THE ONE LIVE USER'S UPGRADE — manual, and it MUST carry her data. Old app: Settings → Open
    data folder → copy everything. Install v4.0 → Open data folder → paste. Without this her
    collections will appear to vanish (they'd still be in the old portable folder). She has
    built no generations yet, which is what made the data relocation cheap — but she may have
-   collections.
+   collections. Coordinate with the developer.
 
 3. v4.0 RECORD DOC, then retire the release plan. Write the v4.0 design record (what shipped,
    how each item was implemented, deviations: none) absorbing

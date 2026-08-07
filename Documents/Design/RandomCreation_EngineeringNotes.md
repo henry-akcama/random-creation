@@ -1,6 +1,6 @@
 # Random Creation — Engineering Notes
 
-**Version: 1.0 — August 2026.** Authoritative for CODE-LEVEL ENGINEERING KNOWLEDGE: the traps,
+**Authoritative for CODE-LEVEL ENGINEERING KNOWLEDGE**: the traps,
 the patterns, and the reasons behind implementation choices that reading the code does not
 reveal. Distinct in kind from `RandomCreation_ProjectContext_v3_0.md`, which is the design
 record — screens, layouts, colour palettes, data models, what the app *is*. This doc is what was
